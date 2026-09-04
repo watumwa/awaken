@@ -94,7 +94,34 @@
         cursor: pointer;
     }
 
-    .download-consent input { width: 18px; height: 18px; margin-top: 2px; accent-color: #1098e8; }
+    /* Some legacy theme CSS hides native checkbox inputs. Force these two
+       consent controls to remain visible and tappable on desktop and mobile. */
+    .download-consent input[type="checkbox"],
+    .download-checkbox {
+        -webkit-appearance: checkbox !important;
+        appearance: auto !important;
+        display: inline-block !important;
+        position: static !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        margin: 2px 0 0 !important;
+        padding: 0 !important;
+        border: initial !important;
+        clip: auto !important;
+        clip-path: none !important;
+        transform: none !important;
+        accent-color: #1098e8;
+        cursor: pointer;
+    }
+
+    .download-consent:focus-within {
+        outline: 3px solid rgba(16,152,232,.18);
+        outline-offset: 4px;
+        border-radius: 5px;
+    }
 
     .errorlist {
         margin: 6px 0 0;

@@ -14,6 +14,7 @@ class FreeBookDownloadForm(forms.ModelForm):
     phone = forms.CharField(max_length=30, validators=[phone_validator])
     privacy_consent = forms.BooleanField(
         required=True,
+        widget=forms.CheckboxInput(attrs={"class": "download-checkbox"}),
         label=(
             "I understand that my name, email address, and phone number will be "
             "recorded so Awakening Saints can manage this free download."
@@ -21,6 +22,7 @@ class FreeBookDownloadForm(forms.ModelForm):
     )
     marketing_consent = forms.BooleanField(
         required=False,
+        widget=forms.CheckboxInput(attrs={"class": "download-checkbox"}),
         label="I would also like to receive occasional updates from Awakening Saints.",
     )
 
