@@ -256,20 +256,21 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# Vercel automatically uploads collectstatic output to its CDN.  Treat the
-# repository's existing media library as a prefixed static source on Vercel so
-# covers, sermons and previously uploaded files are served by the CDN instead of
-# being copied into the Python function bundle.
+# Vercel uploads ``collectstatic`` output to its CDN. Treat the repository's
+# existing media library as a prefixed static source there, but keep MEDIA_URL
+# outside STATIC_URL: Django 6 rejects nested media/static URLs.
 IS_VERCEL = bool(os.getenv("VERCEL"))
 if IS_VERCEL:
     STATICFILES_DIRS = [
         BASE_DIR / "static",
         ("media", BASE_DIR / "media"),
     ]
-    MEDIA_URL = f"{STATIC_URL}media/"
 else:
     STATICFILES_DIRS = [BASE_DIR / "static"]
-    MEDIA_URL = "/media/"
+
+# On Vercel, vercel.json rewrites /media/* to the collected /static/media/*
+# assets. Keeping this distinct from STATIC_URL is required by Django 6.
+MEDIA_URL = "/media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
