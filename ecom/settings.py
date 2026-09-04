@@ -6,9 +6,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
+    # This should be installed dependency on namecheap's ssh terminal
 
-import pymysql     # This should be installed dependency on namecheap's ssh terminal
-pymysql.install_as_MySQLdb()
 
 DEBUG = os.getenv("DEBUG", "False").strip().lower() in {"1", "true", "yes", "on"}
 
