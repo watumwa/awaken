@@ -51,6 +51,12 @@ class ProductAdmin(admin.ModelAdmin):
         }),
     )
 
+    def save_model(self, request, obj, form, change):
+        """Record the administrator who creates each product."""
+        if not change and not obj.created_by_id:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_free_download_count=Count("free_downloads"))
 
