@@ -1,0 +1,283 @@
+{% extends 'bookbase.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .free-download-page {
+        min-height: 75vh;
+        padding: 130px 20px 70px;
+        background: linear-gradient(135deg, #f4f8ff 0%, #fffaf3 100%);
+    }
+
+    .download-card {
+        display: grid;
+        grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+        max-width: 980px;
+        margin: 0 auto;
+        overflow: hidden;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 20px 55px rgba(25, 42, 70, 0.12);
+    }
+
+    .book-panel {
+        padding: 36px;
+        color: #fff;
+        background: #173b63;
+    }
+
+    .book-panel img {
+        display: block;
+        width: 100%;
+        max-height: 390px;
+        margin-bottom: 24px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+    }
+
+    .free-label {
+        display: inline-block;
+        margin-bottom: 12px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        color: #173b63;
+        background: #ffe08a;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+    }
+
+    .book-panel h1 {
+        margin: 0 0 8px;
+        color: #fff;
+        font-size: 1.7rem;
+        line-height: 1.25;
+    }
+
+    .book-panel p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.82);
+    }
+
+    .form-panel {
+        padding: 42px 48px;
+    }
+
+    .form-panel h2 {
+        margin: 0 0 8px;
+        color: #173b63;
+        font-size: 2rem;
+    }
+
+    .form-intro {
+        margin-bottom: 28px;
+        color: #596777;
+    }
+
+    .field-group {
+        margin-bottom: 18px;
+    }
+
+    .field-group > label {
+        display: block;
+        margin-bottom: 7px;
+        color: #27384a;
+        font-weight: 700;
+    }
+
+    .field-group input[type="text"],
+    .field-group input[type="email"] {
+        width: 100%;
+        min-height: 48px;
+        padding: 11px 13px;
+        border: 1px solid #cbd5df;
+        border-radius: 8px;
+        font: inherit;
+        box-sizing: border-box;
+    }
+
+    .field-group input:focus {
+        border-color: #286dae;
+        outline: 3px solid rgba(40, 109, 174, 0.14);
+    }
+
+    .consent-row {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        color: #455463;
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .consent-row input {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        opacity: 0 !important;
+    }
+
+    .consent-box {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        flex: 0 0 18px;
+        box-sizing: border-box;
+        border: 2px solid #60758a;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .consent-row input:checked + .consent-box {
+        border-color: #286dae;
+        background: #286dae;
+        box-shadow: inset 0 0 0 3px #fff;
+    }
+
+    .consent-row input:focus-visible + .consent-box {
+        outline: 3px solid rgba(40, 109, 174, 0.22);
+        outline-offset: 2px;
+    }
+
+    .field-error,
+    .errorlist {
+        margin: 6px 0 0;
+        padding: 0;
+        color: #b42318;
+        list-style: none;
+        font-size: 0.88rem;
+    }
+
+    .download-submit {
+        width: 100%;
+        min-height: 52px;
+        margin-top: 10px;
+        border: 0;
+        border-radius: 9px;
+        color: #fff;
+        background: #d95f24;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .download-submit:hover {
+        background: #bd4c17;
+        transform: translateY(-1px);
+    }
+
+    .privacy-note {
+        margin: 15px 0 0;
+        color: #6b7785;
+        font-size: 0.82rem;
+        text-align: center;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        color: #286dae;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    @media (max-width: 760px) {
+        .free-download-page {
+            padding: 105px 14px 45px;
+        }
+
+        .download-card {
+            grid-template-columns: 1fr;
+        }
+
+        .book-panel,
+        .form-panel {
+            padding: 28px 24px;
+        }
+
+        .book-panel img {
+            max-width: 230px;
+            max-height: 300px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .form-panel h2 {
+            font-size: 1.65rem;
+        }
+    }
+</style>
+
+<main class="free-download-page">
+    <section class="download-card" aria-labelledby="download-heading">
+        <div class="book-panel">
+            {% if product.product_image %}
+                <img src="{{ product.product_image.url }}" alt="Cover of {{ product.title }}">
+            {% endif %}
+            <span class="free-label">FREE E-BOOK</span>
+            <h1>{{ product.title }}</h1>
+            <p>by {{ product.author }}</p>
+        </div>
+
+        <div class="form-panel">
+            <h2 id="download-heading">Get your free copy</h2>
+            <p class="form-intro">
+                Enter your details below and your download will begin immediately. No payment is required.
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <div class="field-group">
+                    <label for="{{ form.full_name.id_for_label }}">Full name</label>
+                    {{ form.full_name }}
+                    {{ form.full_name.errors }}
+                </div>
+
+                <div class="field-group">
+                    <label for="{{ form.email.id_for_label }}">Email address</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+
+                <div class="field-group">
+                    <label for="{{ form.phone.id_for_label }}">Phone number</label>
+                    {{ form.phone }}
+                    {{ form.phone.errors }}
+                </div>
+
+                <label class="consent-row" for="{{ form.privacy_consent.id_for_label }}">
+                    {{ form.privacy_consent }}
+                    <span class="consent-box" aria-hidden="true"></span>
+                    <span>{{ form.privacy_consent.label }}</span>
+                </label>
+                {{ form.privacy_consent.errors }}
+
+                <label class="consent-row" for="{{ form.marketing_consent.id_for_label }}">
+                    {{ form.marketing_consent }}
+                    <span class="consent-box" aria-hidden="true"></span>
+                    <span>{{ form.marketing_consent.label }}</span>
+                </label>
+                {{ form.marketing_consent.errors }}
+
+                <button class="download-submit" type="submit">
+                    <i class="fas fa-download" aria-hidden="true"></i>
+                    Download free book
+                </button>
+            </form>
+
+            <p class="privacy-note">
+                Your contact details are stored securely and are not treated as marketing consent unless you select the optional updates box.
+            </p>
+            <a class="back-link" href="{% url 'sales:product_detail' product.product_slug %}">
+                &larr; Back to book details
+            </a>
+        </div>
+    </section>
+</main>
+{% endblock %}

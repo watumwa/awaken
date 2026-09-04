@@ -1,0 +1,414 @@
+{% extends 'cartbase.html' %} {% load static %} {% block content %}
+
+<style>
+    .order-summary {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 25px;
+        margin-top: 20px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .summary-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        color: var(--dark);
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--border);
+    }
+</style>
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div
+            class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end"
+        >
+            <div class="col-first">
+                <h1>Checkout</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="{% url 'sales:books' %}"
+                        >Home<span class="lnr lnr-arrow-right"></span
+                    ></a>
+                    <a href="single-product.html">Checkout</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Checkout Area =================-->
+<section class="checkout_area section_gap">
+    <div class="container">
+        <div class="billing_details">
+            <div class="row">
+                <div
+                    class="row"
+                    x-data="checkoutForm(JSON.parse('{{ cart_json|escapejs }}'))"
+                    x-init="init()"
+                    id="checkout-component"
+                >
+                    <!-- Checkout form section -->
+                    <div class="col-lg-8">
+                        <form
+                            id="checkoutForm"
+                            class="bg-light p-4 rounded"
+                            @submit.prevent
+                        >
+                            <h4 class="mb-4">Checkout Information</h4>
+
+                            <div class="row">
+                                <!-- Full Name -->
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label"
+                                        >Full Name *</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        x-model="form.fullName"
+                                        @input="validateField('fullName')"
+                                        :class="{'is-invalid': errors.fullName}"
+                                        required
+                                    />
+                                    <div
+                                        class="invalid-feedback"
+                                        x-show="errors.fullName"
+                                        x-text="errors.fullName"
+                                    ></div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">Email *</label>
+                                    <small class="text-muted"
+                                        >(Enter email used on
+                                        registration)</small
+                                    >
+                                    <input
+                                        type="email"
+                                        class="form-control"
+                                        x-model="form.email"
+                                        @input="validateField('email')"
+                                        :class="{'is-invalid': errors.email}"
+                                        required
+                                    />
+                                    <div
+                                        class="invalid-feedback"
+                                        x-show="errors.email"
+                                        x-text="errors.email"
+                                    ></div>
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="mb-3 col-12">
+                                    <label class="form-label"
+                                        >Phone Number *</label
+                                    >
+                                    <input
+                                        type="tel"
+                                        class="form-control"
+                                        x-model="form.phone"
+                                        @input="validateField('phone')"
+                                        :class="{'is-invalid': errors.phone}"
+                                        placeholder="2567XXXXXXXX"
+                                        required
+                                    />
+                                    <small class="text-muted"
+                                        >Format: 2567XXXXXXXX (Uganda)</small
+                                    >
+                                    <div
+                                        class="invalid-feedback"
+                                        x-show="errors.phone"
+                                        x-text="errors.phone"
+                                    ></div>
+                                </div>
+
+                                <!-- Additional fields for PesaPal -->
+                                <div class="mb-3 col-12">
+                                    <label class="form-label"
+                                        >Billing Address (Optional)</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        x-model="form.address"
+                                        placeholder="Street, City"
+                                    />
+                                </div>
+
+                                <!-- Country (Fixed to Uganda) -->
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">Country</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        value="Uganda"
+                                        readonly
+                                    />
+                                    <input
+                                        type="hidden"
+                                        x-model="form.country"
+                                        value="UGANDA"
+                                    />
+                                </div>
+
+                                <!-- City -->
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label">City/Town</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        x-model="form.city"
+                                        placeholder="Kampala, Entebbe, etc."
+                                    />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Order summary and buttons -->
+                    <div class="col-lg-4">
+                        <div class="order-summary">
+                            <div class="summary-title">Order Summary</div>
+
+                            <template
+                                x-for="(item, index) in cart"
+                                :key="index"
+                            >
+                                <div class="summary-item">
+                                    <span
+                                        x-text="item.name + ' (' + item.qty + ')'"
+                                    ></span>
+                                    <span
+                                        >USD
+                                        <span
+                                            x-text="(item.qty * item.price).toFixed(2)"
+                                        ></span
+                                    ></span>
+                                </div>
+                            </template>
+
+                            <div class="summary-item">
+                                <span>Subtotal:</span>
+                                <span
+                                    >USD
+                                    <span x-text="subtotal.toFixed(2)"></span
+                                ></span>
+                            </div>
+
+                            <div class="summary-item total-row">
+                                <strong>Total:</strong>
+                                <strong
+                                    >USD
+                                    <span x-text="grandTotal.toFixed(2)"></span
+                                ></strong>
+                            </div>
+
+                            <!-- PesaPal Payment Button -->
+                            <button
+                                type="button"
+                                class="btn btn-warning w-100 py-3 mt-3"
+                                style="
+                                    background-color: #ff6b00;
+                                    border-color: #ff6b00;
+                                    color: white;
+                                "
+                                @click="initiateLivePayPayment()"
+                                :disabled="loading"
+                            >
+                                <span
+                                    x-text="loading ? 'Processing...' : 'Pay with PesaPal'"
+                                ></span>
+                            </button>
+
+                            <a
+                                href="{% url 'sales:books' %}"
+                                class="btn btn-secondary w-100 py-3 mt-3"
+                            >
+                                Continue Shopping
+                            </a>
+
+                            <div class="mt-3 text-center">
+                                <small class="text-muted">
+                                    Secure payment powered by PesaPal
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    defer
+></script>
+
+<script>
+function checkoutForm(cartFromServer = []) {
+    return {
+        form: {
+            fullName: "",
+            email: "",
+            phone: "",
+            address: "",
+            city: "Kampala",
+            country: "UG",
+            postalCode: "256",
+        },
+
+        cart: cartFromServer,
+        errors: {},
+        loading: false,
+
+        get subtotal() {
+            return this.cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+        },
+
+        get grandTotal() {
+            return this.subtotal;
+        },
+
+        init() {},
+
+        validateField(field) {
+            if (field === "fullName") {
+                this.errors.fullName = this.form.fullName.trim()
+                    ? null
+                    : "Full name required";
+            }
+
+            if (field === "email") {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                this.errors.email = re.test(this.form.email)
+                    ? null
+                    : "Valid email required";
+            }
+
+            if (field === "phone") {
+                const phone = this.form.phone.replace(/\D/g, "");
+                this.errors.phone = /^256[0-9]{9}$/.test(phone)
+                    ? null
+                    : "Use format 2567XXXXXXXX";
+            }
+        },
+
+        validateForm() {
+            this.validateField("fullName");
+            this.validateField("email");
+            this.validateField("phone");
+
+            return Object.values(this.errors).every(e => !e);
+        },
+
+        async initiateLivePayPayment() {
+            if (this.loading) return;
+
+            if (!this.validateForm()) {
+                alert("Fix validation errors first");
+                return;
+            }
+
+            this.loading = true;
+
+            try {
+                // const reference = "LIVEPAY-" + Date.now();
+
+                const orderData = {
+                    full_name: this.form.fullName,
+                    email: this.form.email,
+                    phone: this.form.phone,
+                    address: this.form.address || "Not specified",
+                    city: this.form.city || "Kampala",
+                    country: this.form.country,
+                    postal_code: this.form.postalCode,
+                    cart: this.cart,
+                    amount: this.grandTotal,
+                    currency: "UGX",
+                };
+
+                const saveRes = await fetch("{% url 'cart:save_order' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify(orderData),
+                });
+
+                const save = await saveRes.json();
+
+                if (save.status !== "success") {
+                    this.loading = false;
+                    alert(save.message);
+                    return;
+                }
+
+                const payRes = await fetch("{% url 'cart:initiate_livepay_payment' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify({
+                        order_id: save.order_id,
+                        reference: save.reference,
+                    }),
+                });
+
+                const pay = await payRes.json();
+
+                if (pay.status !== "success") {
+                    this.loading = false;
+                    alert(pay.message);
+                    return;
+                }
+
+                this.pollPayment(save.order_id);
+
+            } catch (e) {
+                console.error(e);
+                alert("Payment error");
+                this.loading = false;
+            }
+        },
+
+        async pollPayment(orderId) {
+            try {
+                const res = await fetch(`/cart/check-payment-status/${orderId}/`);
+                const data = await res.json();
+
+                if (data.paid) {
+                    window.location.href = data.redirect_url;
+                    return;
+                }
+
+                if (data.failed) {
+                    this.loading = false;
+                    alert("Payment failed");
+                    return;
+                }
+
+                setTimeout(() => this.pollPayment(orderId), 3000);
+
+            } catch (e) {
+                setTimeout(() => this.pollPayment(orderId), 4000);
+            }
+        }
+    };
+}
+</script>
+
+{% endblock %}

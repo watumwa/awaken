@@ -1,0 +1,11 @@
+{% autoescape off %}
+
+Hi {{ user.first_name }} {{ user.last_name }},
+
+Your account has been created successfully. Please click the link below to activate your account.
+
+{{activation_link}}
+
+Thanks !
+
+{% endautoescape %}
