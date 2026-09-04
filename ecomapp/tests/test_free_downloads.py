@@ -47,7 +47,7 @@ class FreeBookDownloadTests(TestCase):
         response = self.client.get(reverse("sales:books"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "free to download")
+        self.assertContains(response, "available to download free")
         self.assertContains(response, reverse("sales:free_book_download", args=[self.product.product_slug]))
 
     def test_out_of_stock_digital_book_still_has_details_page(self):

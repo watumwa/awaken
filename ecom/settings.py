@@ -6,8 +6,6 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
-    # This should be installed dependency on namecheap's ssh terminal
-
 
 DEBUG = os.getenv("DEBUG", "False").strip().lower() in {"1", "true", "yes", "on"}
 
@@ -161,22 +159,56 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ecom.wsgi.application"
 
-
-import dj_database_url
-
 DATABASE_URL = (
     os.getenv("DATABASE_URL")
     or os.getenv("POSTGRES_URL")
     or os.getenv("POSTGRES_PRISMA_URL")
 )
+MYSQL_ENVIRONMENT = {
+    "DB_NAME": os.getenv("DB_NAME"),
+    "DB_USER": os.getenv("DB_USER"),
+    "DB_PASSWORD": os.getenv("DB_PASSWORD"),
+}
+MYSQL_SETTINGS = {
+    "NAME": MYSQL_ENVIRONMENT["DB_NAME"],
+    "USER": MYSQL_ENVIRONMENT["DB_USER"],
+    "PASSWORD": MYSQL_ENVIRONMENT["DB_PASSWORD"],
+}
 
 if DATABASE_URL:
+    import dj_database_url
+
     DATABASES = {
         "default": dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=0,
         )
     }
+elif all(MYSQL_SETTINGS.values()):
+    # Namecheap's Python environment normally has PyMySQL available instead of
+    # mysqlclient. Register it before Django loads its MySQL backend.
+    import pymysql
+
+    pymysql.install_as_MySQLdb()
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            **MYSQL_SETTINGS,
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "3306"),
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
+    }
+elif any(MYSQL_ENVIRONMENT.values()):
+    missing_settings = [
+        name
+        for name, value in MYSQL_ENVIRONMENT.items()
+        if not value
+    ]
+    raise ImproperlyConfigured(
+        "Incomplete MySQL configuration. Set DB_NAME, DB_USER and DB_PASSWORD. "
+        f"Missing: {', '.join(missing_settings)}."
+    )
 elif DEBUG:
     DATABASES = {
         "default": {
@@ -186,8 +218,8 @@ elif DEBUG:
     }
 else:
     raise ImproperlyConfigured(
-        "PostgreSQL database URL is missing. "
-        "Set DATABASE_URL in Vercel."
+        "Database configuration is missing. Set DATABASE_URL for PostgreSQL or "
+        "DB_NAME, DB_USER and DB_PASSWORD for MySQL."
     )
 
 AUTH_PASSWORD_VALIDATORS = [
