@@ -95,9 +95,7 @@
 
     <section class="detail-card">
         <div>
-            {% if product.product_image %}
-                <img class="detail-cover" src="{{ product.product_image.url }}" alt="Cover of {{ product.title }}">
-            {% endif %}
+            <img class="detail-cover" src="{{ product.get_cover_url }}" alt="Cover of {{ product.title }}">
         </div>
         <div class="detail-info">
             <span class="detail-badge"><i class="fas fa-gift"></i> Free download</span>

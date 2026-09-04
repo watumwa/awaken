@@ -13,9 +13,6 @@ stderr.log
 *.log
 **/__pycache__/
 **/*.pyc
-media/media_files/
-media/media_thumbnails/
-media/product_images/
 
 # Django generated files
 staticfiles/

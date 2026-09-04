@@ -28,6 +28,13 @@ from .basket import cartbasket
 signer = TimestampSigner()
 
 
+def get_livepay_headers():
+    return {
+        "Authorization": f"Bearer {settings.LIVEPAY_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+
 # Show cart page
 @login_required
 def basket_summary(request):

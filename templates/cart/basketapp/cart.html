@@ -36,7 +36,7 @@
                                     <td data-label="Product">
                                         <div class="product-media">
                                         <div class="product-img">
-                                            <img src="{{ product.product_image.url }}" alt="{{ product.title }}">
+                                            <img src="{{ product.get_cover_url }}" alt="{{ product.title }}">
                                         </div>
                                         <div class="product-info">
                                             <h4>{{ product.title }}</h4>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status | Awakening Saints</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .status-icon.pending { color: #f39c12; }
+        .status-icon.failed { color: #e74c3c; }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .order-info {
+            margin: 25px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            text-align: left;
+        }
+
+        .order-info p {
+            margin: 6px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 28px;
+            background: #2c7be5;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if order.payment_status == "failed" %}
+            <div class="status-icon failed">✕</div>
+            <h1>Payment Failed</h1>
+            <p>We couldn't confirm payment for this order. You can try again below.</p>
+        {% else %}
+            <div class="status-icon pending">⏳</div>
+            <h1>Payment Pending</h1>
+            <p>We're still waiting to confirm your payment. This page will update automatically once it clears.</p>
+        {% endif %}
+
+        <div class="order-info">
+            <p><strong>Order #:</strong> {{ order.id }}</p>
+            <p><strong>Reference:</strong> {{ order.tx_ref }}</p>
+            <p><strong>Amount:</strong> {{ order.total }} {{ order.currency }}</p>
+            <p><strong>Status:</strong> {{ order.get_payment_status_display }}</p>
+        </div>
+
+        <a href="{% url 'cart:checkout' %}" class="btn">Back to checkout</a>
+    </div>
+
+    {% if order.payment_status != "failed" %}
+    <script>
+        (function poll() {
+            fetch("{% url 'cart:check_payment_status' order.id %}")
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.paid && data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                        return;
+                    }
+                    if (data.failed) {
+                        window.location.reload();
+                        return;
+                    }
+                    setTimeout(poll, 5000);
+                })
+                .catch(() => setTimeout(poll, 5000));
+        })();
+    </script>
+    {% endif %}
+</body>
+</html>

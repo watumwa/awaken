@@ -161,9 +161,7 @@
 <div class="book-page-wrap">
     <section class="download-layout" aria-labelledby="download-heading">
         <aside class="download-book-panel">
-            {% if product.product_image %}
-                <img src="{{ product.product_image.url }}" alt="Cover of {{ product.title }}">
-            {% endif %}
+            <img src="{{ product.get_cover_url }}" alt="Cover of {{ product.title }}">
             <span class="download-badge"><i class="fas fa-gift"></i> Free e-book</span>
             <h1>{{ product.title }}</h1>
             <p>by {{ product.author }}</p>

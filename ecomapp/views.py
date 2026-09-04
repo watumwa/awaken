@@ -10,7 +10,6 @@ from django.core.mail import send_mass_mail
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -174,18 +173,12 @@ def index(request, cat_slug=None):
         category = get_object_or_404(Category, cat_slug=cat_slug)
         products = products.filter(category=category)
 
-    def image_url(product):
-        try:
-            return product.product_image.url if product.product_image else static("assets/images/logo.png")
-        except (ValueError, OSError):
-            return static("assets/images/logo.png")
-
     product_data = [
         {
             "id": product.id,
             "title": product.title,
             "author": product.author,
-            "image": image_url(product),
+            "image": product.get_cover_url(),
             "category_name": product.category.cat_name,
             "category_slug": product.category.cat_slug,
             "slug": product.product_slug,

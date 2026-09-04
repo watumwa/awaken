@@ -429,7 +429,7 @@
 							<div class="product-card">
 								<a href="{{ product.get_absolute_url }}">
 									<!-- <div class="product-badge1">Best Seller</div> -->
-									<img class="product-image" src="{{ product.product_image.url }}" alt="Product Image">
+									<img class="product-image" src="{{ product.get_cover_url }}" alt="Product Image">
 									<div class="product-info">
 											<h6 class="product-name">{{ product.title }}</h6>
 									
