@@ -274,6 +274,18 @@ MEDIA_URL = "/media/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+# Vercel Functions cannot persist uploads under /var/task. Existing repository
+# media remains available through the /media/ -> /static/media/ rewrite, while
+# all new FileField/ImageField uploads are stored in Vercel Blob.
+if IS_VERCEL:
+    STORAGES = {
+        "default": {"BACKEND": "ecom.storage.VercelBlobStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
+    }
+
+
 
 ######## These tell django about the custom user modal we created ########
 AUTH_USER_MODEL = "useraccounts.UserBase"

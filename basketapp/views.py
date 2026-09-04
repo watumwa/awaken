@@ -520,17 +520,20 @@ def download_book(request, signed_value):
     order_item.downloaded = True
     order_item.save(update_fields=["downloaded"])
 
-    file_path = book_file.path
-    mime_type, _ = mimetypes.guess_type(file_path)
+    # Storage-agnostic read: works for both legacy local media and Vercel Blob.
+    mime_type, _ = mimetypes.guess_type(book_file.name)
+    try:
+        with book_file.open("rb") as f:
+            response = HttpResponse(
+                f.read(), content_type=mime_type or "application/octet-stream"
+            )
+    except (FileNotFoundError, OSError):
+        raise Http404("Book file not found")
 
-    with open(file_path, "rb") as f:
-        response = HttpResponse(
-            f.read(), content_type=mime_type or "application/octet-stream"
-        )
-        response["Content-Disposition"] = (
-            f'attachment; filename="{order_item.product.title}.pdf"'
-        )
-        return response
+    response["Content-Disposition"] = (
+        f'attachment; filename="{order_item.product.title}.pdf"'
+    )
+    return response
 
 
 @login_required

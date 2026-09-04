@@ -53,7 +53,7 @@ class Product(models.Model):
     description = CKEditor5Field(blank=True, null=True)
 
     product_image = models.ImageField(
-        upload_to="product_images/", default="product_images/p2.jpg"
+        upload_to="product_images/", default="product_images/p2.jpg", max_length=500
     )
 
     product_slug = models.CharField(max_length=255)
@@ -61,7 +61,9 @@ class Product(models.Model):
 
     qty_in_stock = models.DecimalField(max_digits=20, decimal_places=0, default=0)
 
-    book_file = models.FileField(upload_to="books/", blank=True, null=True)
+    book_file = models.FileField(
+        upload_to="books/", blank=True, null=True, max_length=500
+    )
 
     in_stock = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
@@ -303,10 +305,14 @@ class SermonContent(models.Model):
     title = models.CharField(max_length=255)
     media_type = models.CharField(max_length=10, choices=MEDIA_TYPES)
 
-    file = models.FileField(upload_to="media_files/", blank=True, null=True)
+    file = models.FileField(
+        upload_to="media_files/", blank=True, null=True, max_length=500
+    )
     text_body = CKEditor5Field(blank=True, null=True)
 
-    thumbnail = models.ImageField(upload_to="media_thumbnails/", blank=True, null=True)
+    thumbnail = models.ImageField(
+        upload_to="media_thumbnails/", blank=True, null=True, max_length=500
+    )
 
     preacher = models.CharField(max_length=255, blank=True)
     scripture = models.CharField(max_length=255, blank=True)

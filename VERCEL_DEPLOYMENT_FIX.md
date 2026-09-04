@@ -28,3 +28,30 @@ Do not delete the local `venv` if you still use it for development; `git rm --ca
 ## Important limitation for future uploads
 
 Vercel Functions do not provide durable application filesystem storage. The existing media that is committed in Git can be deployed and served from the CDN, but files uploaded later through Django Admin should be moved to persistent object storage (for example S3-compatible storage) if they must survive deployments. For the current 11 free books, keeping the PDFs in `media/books/` is fine and only adds about 10 MB.
+
+## Durable Django Admin uploads (Vercel Blob)
+
+Vercel's deployed application filesystem is read-only. New files uploaded from
+Django Admin must therefore not use `FileSystemStorage` under `/var/task/media`.
+
+This project now uses a hybrid `VercelBlobStorage` backend on Vercel:
+
+- existing repository media paths such as `books/example.pdf` continue to work;
+- new `product_image` and `book_file` uploads are written to Vercel Blob;
+- the returned public Blob URL is stored in the Product record;
+- local development continues to use Django's normal filesystem storage.
+
+### Vercel setup
+
+1. Open the Vercel project.
+2. Go to **Storage** and create/connect a **Blob** store with **Public** access.
+3. Ensure `BLOB_READ_WRITE_TOKEN` is attached to the Production environment.
+4. Redeploy the project.
+5. Run the database migration so media fields can store long Blob URLs:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+If the token is missing, the application now raises a clear configuration error
+instead of attempting to write into Vercel's read-only `/var/task` filesystem.
