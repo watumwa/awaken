@@ -163,46 +163,33 @@ TEMPLATES = [
 WSGI_APPLICATION = "ecom.wsgi.application"
 
 
-DATABASE_ENGINE = os.getenv("DATABASE_ENGINE", "mysql").strip().lower()
+import dj_database_url
 
-if DATABASE_ENGINE == "sqlite":
-    sqlite_database_path = Path(os.getenv("SQLITE_DATABASE_PATH", "db.sqlite3"))
-    if not sqlite_database_path.is_absolute():
-        sqlite_database_path = BASE_DIR / sqlite_database_path
+DATABASE_URL = (
+    os.getenv("DATABASE_URL")
+    or os.getenv("POSTGRES_URL")
+    or os.getenv("POSTGRES_PRISMA_URL")
+)
 
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=0,
+        )
+    }
+elif DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": sqlite_database_path,
-        }
-    }
-elif DATABASE_ENGINE == "mysql":
-    required_db_settings = {
-        "DB_NAME": os.getenv("DB_NAME"),
-        "DB_USER": os.getenv("DB_USER"),
-        "DB_PASSWORD": os.getenv("DB_PASSWORD"),
-    }
-    missing_db_settings = [key for key, value in required_db_settings.items() if not value]
-    if missing_db_settings:
-        raise ImproperlyConfigured(
-            "Missing MySQL environment settings: " + ", ".join(missing_db_settings)
-        )
-
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": required_db_settings["DB_NAME"],
-            "USER": required_db_settings["DB_USER"],
-            "PASSWORD": required_db_settings["DB_PASSWORD"],
-            "HOST": os.getenv("DB_HOST", "localhost"),
-            "PORT": os.getenv("DB_PORT", "3306"),
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 else:
     raise ImproperlyConfigured(
-        "DATABASE_ENGINE must be either 'sqlite' for local development or 'mysql' for deployment."
+        "PostgreSQL database URL is missing. "
+        "Set DATABASE_URL in Vercel."
     )
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
