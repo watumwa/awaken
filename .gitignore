@@ -5,6 +5,19 @@ venv/
 __pycache__/
 *.py[cod]
 
+venv/
+.venv/
+staticfiles/
+tmp/
+db.sqlite3
+stderr.log
+*.log
+**/__pycache__/
+**/*.pyc
+media/media_files/
+media/media_thumbnails/
+media/product_images/
+
 # Django generated files
 staticfiles/
 db.sqlite3
