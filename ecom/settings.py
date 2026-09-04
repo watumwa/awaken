@@ -10,20 +10,23 @@ load_dotenv(BASE_DIR / ".env")
 import pymysql     # This should be installed dependency on namecheap's ssh terminal
 pymysql.install_as_MySQLdb()
 
-SECRET_KEY = "django-insecure-ev28k=ir#vah2v)!-*t65t!+b#j(xnk24fv88!nkoemy)#0ag1"
+DEBUG = os.getenv("DEBUG", "False").strip().lower() in {"1", "true", "yes", "on"}
 
-# DEBUG = True
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "django-insecure-local-development-only-change-me"
+    else:
+        raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set when DEBUG=False.")
 
-# ALLOWED_HOSTS = [
-#     "localhost",
-#     "127.0.0.1",
-#     "[::1]",
-#     "unmossed-brody-nonaromatically.ngrok-free.dev",  # ngrok domain for testing
-# ]  # For local development only
-
-DEBUG = True
-
-ALLOWED_HOSTS = ['awakeningsaints.org', '*']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        "ALLOWED_HOSTS",
+        "127.0.0.1,localhost,awakeningsaints.org,www.awakeningsaints.org,.vercel.app",
+    ).split(",")
+    if host.strip()
+]
 
 
 INSTALLED_APPS = [
@@ -174,12 +177,23 @@ if DATABASE_ENGINE == "sqlite":
         }
     }
 elif DATABASE_ENGINE == "mysql":
+    required_db_settings = {
+        "DB_NAME": os.getenv("DB_NAME"),
+        "DB_USER": os.getenv("DB_USER"),
+        "DB_PASSWORD": os.getenv("DB_PASSWORD"),
+    }
+    missing_db_settings = [key for key, value in required_db_settings.items() if not value]
+    if missing_db_settings:
+        raise ImproperlyConfigured(
+            "Missing MySQL environment settings: " + ", ".join(missing_db_settings)
+        )
+
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("DB_NAME", "awakzfip_awake"),
-            "USER": os.getenv("DB_USER", "awakzfip_kal"),
-            "PASSWORD": os.getenv("DB_PASSWORD", "jamir1.022"),
+            "NAME": required_db_settings["DB_NAME"],
+            "USER": required_db_settings["DB_USER"],
+            "PASSWORD": required_db_settings["DB_PASSWORD"],
             "HOST": os.getenv("DB_HOST", "localhost"),
             "PORT": os.getenv("DB_PORT", "3306"),
         }
@@ -221,11 +235,24 @@ USE_TZ = True
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATICFILES_DIRS = [BASE_DIR / "static"]
 
-MEDIA_URL = "/media/"
+# Vercel automatically uploads collectstatic output to its CDN.  Treat the
+# repository's existing media library as a prefixed static source on Vercel so
+# covers, sermons and previously uploaded files are served by the CDN instead of
+# being copied into the Python function bundle.
+IS_VERCEL = bool(os.getenv("VERCEL"))
+if IS_VERCEL:
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",
+        ("media", BASE_DIR / "media"),
+    ]
+    MEDIA_URL = f"{STATIC_URL}media/"
+else:
+    STATICFILES_DIRS = [BASE_DIR / "static"]
+    MEDIA_URL = "/media/"
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
@@ -236,10 +263,9 @@ AUTH_USER_MODEL = "useraccounts.UserBase"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# SECURE_SSL_REDIRECT = True
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -266,14 +292,19 @@ DEFAULT_CURRENCY = "USD"
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "awakeningsaints.org"  # from "Outgoing Server"
-EMAIL_PORT = 465  # from "SMTP Port"
-EMAIL_USE_SSL = True  # because port 465 = SSL
-EMAIL_HOST_USER = "info@awakeningsaints.org"  # or use 'noreply@...' if created
-EMAIL_HOST_PASSWORD = "Christjesus1@!"  # this is the password for the mailbox
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST = os.getenv("EMAIL_HOST", "awakeningsaints.org")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "465"))
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "True").strip().lower() in {"1", "true", "yes", "on"}
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "info@awakeningsaints.org")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER)
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://unmossed-brody-nonaromatically.ngrok-free.dev",
+    origin.strip()
+    for origin in os.getenv(
+        "CSRF_TRUSTED_ORIGINS",
+        "https://awakeningsaints.org,https://www.awakeningsaints.org,https://*.vercel.app",
+    ).split(",")
+    if origin.strip()
 ]

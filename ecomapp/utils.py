@@ -2,22 +2,24 @@ import os
 
 
 def get_media_duration(file_path, media_type):
+    """Return audio/video duration without bundling MoviePy/FFmpeg/NumPy.
+
+    Mutagen can read duration metadata for the audio formats used by this project
+    and for common MP4/M4A containers. If a format is unsupported, the UI falls
+    back to 0:00 instead of making the deployment depend on a ~100 MB FFmpeg stack.
+    """
     try:
-        if media_type == 'audio':
+        if media_type in {"audio", "video"}:
             from mutagen import File as MutagenFile
 
-            audio = MutagenFile(file_path)
-            if audio is not None and audio.info.length:
-                return format_duration(audio.info.length)
-        elif media_type == 'video':
-            from moviepy import VideoFileClip
+            media = MutagenFile(file_path)
+            length = getattr(getattr(media, "info", None), "length", None)
+            if length:
+                return format_duration(length)
+    except Exception:
+        pass
+    return "0:00"
 
-            clip = VideoFileClip(file_path)
-            duration = clip.duration
-            clip.close()
-            return format_duration(duration)
-    except Exception as e:
-        return "0:00"
 
 def format_duration(seconds):
     minutes = int(seconds // 60)
@@ -25,19 +27,14 @@ def format_duration(seconds):
     return f"{minutes}:{secs:02d}"
 
 
-
-
-
 def extract_text_from_file(file_path):
     ext = os.path.splitext(file_path)[1].lower()
 
     try:
-        if ext == '.docx':
+        if ext == ".docx":
             return extract_from_docx(file_path)
-
-        elif ext == '.doc':
+        elif ext == ".doc":
             return extract_from_doc(file_path)
-
         return f"Unsupported file type: {ext}"
     except Exception as e:
         print(f"[ERROR] extract_text_from_file: {e}")

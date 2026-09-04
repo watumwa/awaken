@@ -1,154 +1,107 @@
 {% extends 'bookbase.html' %}
-{% load static %}
 
-{% block content %}
+{% block title %}Download {{ product.title }} Free | Awakening Saints{% endblock %}
+
+{% block extra_css %}
 <style>
-    .free-download-page {
-        min-height: 75vh;
-        padding: 130px 20px 70px;
-        background: linear-gradient(135deg, #f4f8ff 0%, #fffaf3 100%);
-    }
-
-    .download-card {
+    .download-layout {
         display: grid;
-        grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+        grid-template-columns: minmax(230px, 350px) minmax(0, 1fr);
         max-width: 980px;
-        margin: 0 auto;
+        margin: 28px auto 60px;
         overflow: hidden;
         background: #fff;
+        border: 1px solid #e7edf3;
         border-radius: 18px;
-        box-shadow: 0 20px 55px rgba(25, 42, 70, 0.12);
+        box-shadow: 0 18px 48px rgba(16,42,67,.12);
     }
 
-    .book-panel {
-        padding: 36px;
+    .download-book-panel {
+        padding: 34px;
         color: #fff;
-        background: #173b63;
+        background: linear-gradient(155deg, #102a43, #146da8);
     }
 
-    .book-panel img {
+    .download-book-panel img {
         display: block;
         width: 100%;
-        max-height: 390px;
-        margin-bottom: 24px;
+        aspect-ratio: 3 / 4;
         object-fit: cover;
-        border-radius: 10px;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+        margin-bottom: 22px;
+        border-radius: 11px;
+        box-shadow: 0 12px 28px rgba(0,0,0,.22);
     }
 
-    .free-label {
-        display: inline-block;
-        margin-bottom: 12px;
-        padding: 5px 12px;
+    .download-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        margin-bottom: 11px;
+        color: #17663a;
+        background: #dff6e8;
         border-radius: 999px;
-        color: #173b63;
-        background: #ffe08a;
-        font-size: 0.78rem;
+        font-size: .76rem;
         font-weight: 800;
-        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        letter-spacing: .04em;
     }
 
-    .book-panel h1 {
-        margin: 0 0 8px;
+    .download-book-panel h1 {
+        margin: 0 0 7px;
         color: #fff;
-        font-size: 1.7rem;
-        line-height: 1.25;
+        font-size: 1.65rem;
+        line-height: 1.3;
     }
 
-    .book-panel p {
-        margin: 0;
-        color: rgba(255, 255, 255, 0.82);
-    }
+    .download-book-panel p { margin: 0; color: rgba(255,255,255,.82); }
 
-    .form-panel {
-        padding: 42px 48px;
-    }
+    .download-form-panel { padding: clamp(28px, 5vw, 46px); }
+    .download-form-panel h2 { margin: 0 0 8px; color: #102a43; font-size: 2rem; }
+    .download-intro { margin: 0 0 24px; color: #627d98; line-height: 1.6; }
 
-    .form-panel h2 {
-        margin: 0 0 8px;
-        color: #173b63;
-        font-size: 2rem;
-    }
+    .download-field { margin-bottom: 17px; }
+    .download-field > label { display: block; margin-bottom: 7px; color: #243b53; font-weight: 700; }
 
-    .form-intro {
-        margin-bottom: 28px;
-        color: #596777;
-    }
-
-    .field-group {
-        margin-bottom: 18px;
-    }
-
-    .field-group > label {
-        display: block;
-        margin-bottom: 7px;
-        color: #27384a;
-        font-weight: 700;
-    }
-
-    .field-group input[type="text"],
-    .field-group input[type="email"] {
+    .download-field input[type="text"],
+    .download-field input[type="email"] {
         width: 100%;
         min-height: 48px;
         padding: 11px 13px;
-        border: 1px solid #cbd5df;
-        border-radius: 8px;
+        color: #243b53;
+        background: #fff;
+        border: 1px solid #bcccdc;
+        border-radius: 9px;
         font: inherit;
         box-sizing: border-box;
     }
 
-    .field-group input:focus {
-        border-color: #286dae;
-        outline: 3px solid rgba(40, 109, 174, 0.14);
+    .download-field input:focus {
+        border-color: #1098e8;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(16,152,232,.13);
     }
 
-    .consent-row {
-        display: flex;
+    .download-consent {
+        display: grid;
+        grid-template-columns: 20px 1fr;
         gap: 10px;
-        align-items: flex-start;
-        margin-bottom: 15px;
-        color: #455463;
-        font-size: 0.92rem;
-        line-height: 1.45;
-    }
-
-    .consent-row input {
-        position: absolute !important;
-        width: 1px;
-        height: 1px;
-        opacity: 0 !important;
-    }
-
-    .consent-box {
-        width: 18px;
-        height: 18px;
-        margin-top: 2px;
-        flex: 0 0 18px;
-        box-sizing: border-box;
-        border: 2px solid #60758a;
-        border-radius: 4px;
-        background: #fff;
+        align-items: start;
+        margin: 14px 0;
+        color: #486581;
+        font-size: .91rem;
+        line-height: 1.5;
         cursor: pointer;
     }
 
-    .consent-row input:checked + .consent-box {
-        border-color: #286dae;
-        background: #286dae;
-        box-shadow: inset 0 0 0 3px #fff;
-    }
+    .download-consent input { width: 18px; height: 18px; margin-top: 2px; accent-color: #1098e8; }
 
-    .consent-row input:focus-visible + .consent-box {
-        outline: 3px solid rgba(40, 109, 174, 0.22);
-        outline-offset: 2px;
-    }
-
-    .field-error,
     .errorlist {
         margin: 6px 0 0;
         padding: 0;
         color: #b42318;
         list-style: none;
-        font-size: 0.88rem;
+        font-size: .86rem;
     }
 
     .download-submit {
@@ -158,126 +111,83 @@
         border: 0;
         border-radius: 9px;
         color: #fff;
-        background: #d95f24;
+        background: #1098e8;
         font: inherit;
         font-weight: 800;
         cursor: pointer;
-        transition: transform 0.2s ease, background 0.2s ease;
     }
 
-    .download-submit:hover {
-        background: #bd4c17;
-        transform: translateY(-1px);
-    }
-
-    .privacy-note {
-        margin: 15px 0 0;
-        color: #6b7785;
-        font-size: 0.82rem;
-        text-align: center;
-    }
-
-    .back-link {
-        display: inline-block;
-        margin-top: 20px;
-        color: #286dae;
-        font-weight: 700;
-        text-decoration: none;
-    }
+    .download-submit:hover { background: #0879bd; }
+    .download-privacy { margin: 14px 0 0; color: #829ab1; font-size: .82rem; line-height: 1.45; }
+    .download-back { display: inline-block; margin-top: 17px; color: #0879bd; font-weight: 700; text-decoration: none; }
 
     @media (max-width: 760px) {
-        .free-download-page {
-            padding: 105px 14px 45px;
-        }
-
-        .download-card {
-            grid-template-columns: 1fr;
-        }
-
-        .book-panel,
-        .form-panel {
-            padding: 28px 24px;
-        }
-
-        .book-panel img {
-            max-width: 230px;
-            max-height: 300px;
-            margin-right: auto;
-            margin-left: auto;
-        }
-
-        .form-panel h2 {
-            font-size: 1.65rem;
-        }
+        .download-layout { grid-template-columns: 1fr; margin-top: 18px; }
+        .download-book-panel { text-align: center; }
+        .download-book-panel img { max-width: 230px; margin-left: auto; margin-right: auto; }
+        .download-form-panel h2 { font-size: 1.65rem; }
     }
 </style>
+{% endblock %}
 
-<main class="free-download-page">
-    <section class="download-card" aria-labelledby="download-heading">
-        <div class="book-panel">
+{% block content %}
+<div class="book-page-wrap">
+    <section class="download-layout" aria-labelledby="download-heading">
+        <aside class="download-book-panel">
             {% if product.product_image %}
                 <img src="{{ product.product_image.url }}" alt="Cover of {{ product.title }}">
             {% endif %}
-            <span class="free-label">FREE E-BOOK</span>
+            <span class="download-badge"><i class="fas fa-gift"></i> Free e-book</span>
             <h1>{{ product.title }}</h1>
             <p>by {{ product.author }}</p>
-        </div>
+        </aside>
 
-        <div class="form-panel">
+        <div class="download-form-panel">
             <h2 id="download-heading">Get your free copy</h2>
-            <p class="form-intro">
-                Enter your details below and your download will begin immediately. No payment is required.
-            </p>
+            <p class="download-intro">Your name, email address and phone number are required so Awakening Saints can keep a record of who received the book. After you submit, the file downloads immediately.</p>
 
-            <form method="post">
+            <form method="post" novalidate>
                 {% csrf_token %}
                 {{ form.non_field_errors }}
 
-                <div class="field-group">
+                <div class="download-field">
                     <label for="{{ form.full_name.id_for_label }}">Full name</label>
                     {{ form.full_name }}
                     {{ form.full_name.errors }}
                 </div>
 
-                <div class="field-group">
+                <div class="download-field">
                     <label for="{{ form.email.id_for_label }}">Email address</label>
                     {{ form.email }}
                     {{ form.email.errors }}
                 </div>
 
-                <div class="field-group">
-                    <label for="{{ form.phone.id_for_label }}">Phone number</label>
+                <div class="download-field">
+                    <label for="{{ form.phone.id_for_label }}">Phone / WhatsApp number</label>
                     {{ form.phone }}
                     {{ form.phone.errors }}
                 </div>
 
-                <label class="consent-row" for="{{ form.privacy_consent.id_for_label }}">
+                <label class="download-consent" for="{{ form.privacy_consent.id_for_label }}">
                     {{ form.privacy_consent }}
-                    <span class="consent-box" aria-hidden="true"></span>
                     <span>{{ form.privacy_consent.label }}</span>
                 </label>
                 {{ form.privacy_consent.errors }}
 
-                <label class="consent-row" for="{{ form.marketing_consent.id_for_label }}">
+                <label class="download-consent" for="{{ form.marketing_consent.id_for_label }}">
                     {{ form.marketing_consent }}
-                    <span class="consent-box" aria-hidden="true"></span>
                     <span>{{ form.marketing_consent.label }}</span>
                 </label>
                 {{ form.marketing_consent.errors }}
 
                 <button class="download-submit" type="submit">
-                    <i class="fas fa-download" aria-hidden="true"></i>
-                    Download free book
+                    <i class="fas fa-download" aria-hidden="true"></i> Download book free
                 </button>
             </form>
 
-            <p class="privacy-note">
-                Your contact details are stored securely and are not treated as marketing consent unless you select the optional updates box.
-            </p>
-            <a class="back-link" href="{% url 'sales:product_detail' product.product_slug %}">
-                &larr; Back to book details
-            </a>
+            <p class="download-privacy">The optional updates checkbox is separate from the required download-record consent. Contact details can be viewed and exported by authorised administrators in Django Admin.</p>
+            <a class="download-back" href="{% url 'sales:product_detail' product.product_slug %}">&larr; Back to book details</a>
         </div>
     </section>
-</main>
+</div>
 {% endblock %}

@@ -10,6 +10,7 @@ from django.core.mail import send_mass_mail
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -162,40 +163,50 @@ def add_comment(request):
 
 
 def index(request, cat_slug=None):
+    """Render the free digital library.
+
+    Prices and cart actions are intentionally not exposed here: every public book
+    download is free, while the downloader contact form is handled by
+    ``free_book_download``.
+    """
+    products = Product.products.select_related("category")
     if cat_slug:
         category = get_object_or_404(Category, cat_slug=cat_slug)
-        products = Product.objects.filter(category=category, is_active=True)
-    else:
-        products = Product.products.all()
+        products = products.filter(category=category)
+
+    def image_url(product):
+        try:
+            return product.product_image.url if product.product_image else static("assets/images/logo.png")
+        except (ValueError, OSError):
+            return static("assets/images/logo.png")
 
     product_data = [
         {
-            "id": p.id,
-            "title": p.title,
-            "author": p.author,
-            "price": float(p.product_price),
-            "image": p.product_image.url if p.product_image else "",
-            "category_name": p.category.cat_name,
-            "category_slug": p.category.cat_slug,
-            "rating": 4.5,  # placeholder
-            "slug": p.product_slug,
-            "details_url": reverse("sales:product_detail", args=[p.product_slug]),
-            "download_url": reverse("sales:free_book_download", args=[p.product_slug]),
-            "has_file": bool(p.book_file),
+            "id": product.id,
+            "title": product.title,
+            "author": product.author,
+            "image": image_url(product),
+            "category_name": product.category.cat_name,
+            "category_slug": product.category.cat_slug,
+            "slug": product.product_slug,
+            "details_url": reverse("sales:product_detail", args=[product.product_slug]),
+            "download_url": reverse("sales:free_book_download", args=[product.product_slug]),
+            "has_file": bool(product.book_file),
         }
-        for p in products
+        for product in products
     ]
 
-    categories = Category.objects.all()
+    categories = Category.objects.order_by("cat_name")
     category_data = [{"name": cat.cat_name, "slug": cat.cat_slug} for cat in categories]
 
-    context = {
-        "slider": products,
-        "products": products,  # Add this for Jinja2 rendering
-        "products_data": product_data,
-        "categories_data": category_data,
-    }
-    return render(request, "main/ecomapp/index.html", context)
+    return render(
+        request,
+        "main/ecomapp/index.html",
+        {
+            "products_data": product_data,
+            "categories_data": category_data,
+        },
+    )
 
 
 def single_product(request, product_slug):
