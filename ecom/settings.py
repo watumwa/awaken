@@ -3,6 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
+from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -27,7 +28,8 @@ ALLOWED_HOSTS = [
 
 
 INSTALLED_APPS = [
-    "jazzmin",
+    # Unfold must be before Django's admin app so it can supply the admin theme.
+    "unfold",
     "django_ckeditor_5",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -39,6 +41,102 @@ INSTALLED_APPS = [
     "useraccounts.apps.UseraccountsConfig",
     "basketapp.apps.BasketappConfig",
 ]
+
+# A focused admin workspace for the book library. The dashboard data is supplied
+# at request time so every administrator sees current download activity.
+UNFOLD = {
+    "SITE_TITLE": "Awakening Saints Admin",
+    "SITE_HEADER": "Awakening Saints",
+    "SITE_SUBHEADER": "Digital Library",
+    "SITE_SYMBOL": "auto_stories",
+    "SITE_URL": "/",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "DASHBOARD_CALLBACK": "ecomapp.admin_dashboard.dashboard_callback",
+    "COLORS": {
+        "primary": {
+            "50": "#f0f9ff",
+            "100": "#e0f2fe",
+            "200": "#bae6fd",
+            "300": "#7dd3fc",
+            "400": "#38bdf8",
+            "500": "#0ea5e9",
+            "600": "#0284c7",
+            "700": "#0369a1",
+            "800": "#075985",
+            "900": "#0c4a6e",
+            "950": "#082f49",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "Library",
+                "items": [
+                    {
+                        "title": "Books",
+                        "icon": "menu_book",
+                        "link": reverse_lazy("admin:ecomapp_product_changelist"),
+                    },
+                    {
+                        "title": "Download activity",
+                        "icon": "download",
+                        "link": reverse_lazy("admin:ecomapp_freebookdownload_changelist"),
+                        "badge": "ecomapp.admin_dashboard.downloads_today_badge",
+                        "badge_variant": "info",
+                    },
+                    {
+                        "title": "Categories",
+                        "icon": "category",
+                        "link": reverse_lazy("admin:ecomapp_category_changelist"),
+                    },
+                    {
+                        "title": "Book previews",
+                        "icon": "preview",
+                        "link": reverse_lazy("admin:ecomapp_bookpreview_changelist"),
+                    },
+                    {
+                        "title": "Reader reviews",
+                        "icon": "rate_review",
+                        "link": reverse_lazy("admin:ecomapp_bookreview_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Communication",
+                "items": [
+                    {
+                        "title": "Email subscribers",
+                        "icon": "mark_email_read",
+                        "link": reverse_lazy("admin:ecomapp_emailsubscriber_changelist"),
+                    },
+                    {
+                        "title": "Subscriber messages",
+                        "icon": "campaign",
+                        "link": reverse_lazy("admin:ecomapp_subscribermessage_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Legacy commerce",
+                "items": [
+                    {
+                        "title": "Book orders",
+                        "icon": "receipt_long",
+                        "link": reverse_lazy("admin:ecomapp_bookorder_changelist"),
+                    },
+                    {
+                        "title": "Payment logs",
+                        "icon": "payments",
+                        "link": reverse_lazy("admin:ecomapp_paymentlog_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+}
 
 AUTHENTICATION_BACKENDS = [
     "useraccounts.auth_backends.EmailAuthBackend",  # <-- use your correct path

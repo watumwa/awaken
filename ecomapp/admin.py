@@ -3,7 +3,8 @@ import csv
 from django.contrib import admin
 from django.db.models import Count
 from django.http import HttpResponse
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
+from unfold.admin import ModelAdmin, TabularInline
 
 from .models import (
     BookOrder,
@@ -22,14 +23,14 @@ from .models import (
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdmin):
     list_display = ("cat_name", "cat_slug")
     prepopulated_fields = {"cat_slug": ("cat_name",)}
     search_fields = ("cat_name",)
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ModelAdmin):
     list_display = (
         "title",
         "product_image_display",
@@ -43,7 +44,10 @@ class ProductAdmin(admin.ModelAdmin):
     list_select_related = ("category",)
     fieldsets = (
         ("Book details", {"fields": ("title", "author", "category", "product_slug", "description", "is_active")}),
-        ("Free digital download", {"fields": ("product_image", "book_file")}),
+        (
+            "Free digital download",
+            {"fields": ("product_image", "cover_preview", "book_file")},
+        ),
         ("Legacy commerce fields", {
             "fields": ("product_price", "qty_in_stock"),
             "description": "These fields are kept for backwards compatibility. Public book downloads are free and do not use the cart or payment flow.",
@@ -67,17 +71,39 @@ class ProductAdmin(admin.ModelAdmin):
     @admin.display(description="PDF / file")
     def book_file_status(self, obj):
         if obj.book_file:
-            return mark_safe('<span style="color:#137333;font-weight:700;">Ready</span>')
-        return mark_safe('<span style="color:#b3261e;font-weight:700;">Missing</span>')
+            return format_html('<span style="color:#137333;font-weight:700;">Ready</span>')
+        return format_html('<span style="color:#b3261e;font-weight:700;">Missing</span>')
 
     @admin.display(description="Cover")
     def product_image_display(self, obj):
         if obj.product_image:
             try:
-                return mark_safe(f'<img src="{obj.product_image.url}" height="58" style="border-radius:4px;" alt=""/>')
+                return format_html(
+                    '<img src="{}" height="58" width="44" '
+                    'style="border-radius:4px;object-fit:cover;" alt="Cover of {}"/>',
+                    obj.product_image.url,
+                    obj.title,
+                )
             except (ValueError, OSError):
                 pass
         return "-"
+
+    @admin.display(description="Cover preview")
+    def cover_preview(self, obj):
+        if not obj or not obj.product_image:
+            return "Upload a cover image to display it across the library."
+        try:
+            return format_html(
+                '<img src="{}" style="width:180px;max-height:260px;object-fit:cover;'
+                'border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.18);" '
+                'alt="Cover of {}"/>',
+                obj.product_image.url,
+                obj.title,
+            )
+        except (ValueError, OSError):
+            return "The cover image is not currently available."
+
+    readonly_fields = ("cover_preview",)
 
 
 @admin.action(description="Export selected downloader contacts to CSV")
@@ -99,9 +125,10 @@ def export_download_contacts(modeladmin, request, queryset):
 
 
 @admin.register(FreeBookDownload)
-class FreeBookDownloadAdmin(admin.ModelAdmin):
+class FreeBookDownloadAdmin(ModelAdmin):
     list_display = (
         "full_name",
+        "book_cover",
         "email",
         "phone",
         "product",
@@ -121,7 +148,22 @@ class FreeBookDownloadAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "downloaded_at"
     list_per_page = 50
+    list_select_related = ("product",)
     actions = (export_download_contacts,)
+
+    @admin.display(description="Cover")
+    def book_cover(self, obj):
+        if not obj.product.product_image:
+            return "-"
+        try:
+            return format_html(
+                '<img src="{}" height="44" width="33" '
+                'style="border-radius:4px;object-fit:cover;" alt="Cover of {}"/>',
+                obj.product.product_image.url,
+                obj.product.title,
+            )
+        except (ValueError, OSError):
+            return "-"
 
     def has_add_permission(self, request):
         return False
@@ -129,34 +171,38 @@ class FreeBookDownloadAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
+    def has_delete_permission(self, request, obj=None):
+        # Download records are an audit trail and should not be removed casually.
+        return False
+
 
 @admin.register(BookPreview)
-class BookPreviewAdmin(admin.ModelAdmin):
+class BookPreviewAdmin(ModelAdmin):
     list_display = ("book", "chapter_title")
     search_fields = ("book__title", "chapter_title")
     autocomplete_fields = ("book",)
 
 
 @admin.register(BookReview)
-class BookReviewAdmin(admin.ModelAdmin):
+class BookReviewAdmin(ModelAdmin):
     list_display = ("user", "book", "rating", "timestamp")
     list_filter = ("rating", "timestamp")
     search_fields = ("user__email", "book__title")
 
 
 @admin.register(SermonComment)
-class SermonCommentAdmin(admin.ModelAdmin):
+class SermonCommentAdmin(ModelAdmin):
     list_display = ("user", "media", "timestamp")
     search_fields = ("user__email", "media__title")
 
 
-class SermonCommentInline(admin.TabularInline):
+class SermonCommentInline(TabularInline):
     model = SermonComment
     extra = 0
 
 
 @admin.register(SermonContent)
-class SermonContentAdmin(admin.ModelAdmin):
+class SermonContentAdmin(ModelAdmin):
     inlines = (SermonCommentInline,)
     list_display = ("title", "media_type", "uploaded_at")
     list_filter = ("media_type",)
@@ -165,20 +211,20 @@ class SermonContentAdmin(admin.ModelAdmin):
 
     def file_preview(self, obj):
         if obj.media_type == "audio" and obj.file:
-            return mark_safe(f"<audio controls src='{obj.file.url}'></audio>")
+            return format_html('<audio controls src="{}"></audio>', obj.file.url)
         if obj.media_type == "video" and obj.file:
-            return mark_safe(f"<video controls src='{obj.file.url}'></video>")
+            return format_html('<video controls src="{}"></video>', obj.file.url)
         return "-"
 
 
-class BookOrderItemInline(admin.TabularInline):
+class BookOrderItemInline(TabularInline):
     model = BookOrderItem
     extra = 0
     readonly_fields = ("product", "quantity", "price", "get_total")
 
 
 @admin.register(BookOrder)
-class BookOrderAdmin(admin.ModelAdmin):
+class BookOrderAdmin(ModelAdmin):
     list_display = ("id", "full_name", "email", "tx_ref", "payment_status", "total", "created")
     list_filter = ("status", "payment_status")
     search_fields = ("full_name", "email", "tx_ref")
@@ -186,18 +232,18 @@ class BookOrderAdmin(admin.ModelAdmin):
 
 
 @admin.register(PaymentLog)
-class PaymentLogAdmin(admin.ModelAdmin):
+class PaymentLogAdmin(ModelAdmin):
     list_display = ("order", "status", "created_at")
     search_fields = ("order__tx_ref",)
 
 
 @admin.register(EmailSubscriber)
-class EmailSubscriberAdmin(admin.ModelAdmin):
+class EmailSubscriberAdmin(ModelAdmin):
     list_display = ("email", "subscribed_on")
     search_fields = ("email",)
 
 
 @admin.register(SubscriberMessage)
-class SubscriberMessageAdmin(admin.ModelAdmin):
+class SubscriberMessageAdmin(ModelAdmin):
     list_display = ("title", "sent_at")
     readonly_fields = ("sent_at",)

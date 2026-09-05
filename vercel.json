@@ -2,7 +2,24 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "ecom/wsgi.py": {
-      "excludeFiles": "{venv/**,.venv/**,static/**,staticfiles/**,media/media_files/**,media/media_thumbnails/**,media/product_images/**,db.sqlite3,stderr.log,**/*.log,**/__pycache__/**,**/*.pyc}"
+      "excludeFiles": "{venv/**,.venv/**,static/**,staticfiles/**,media/**,db.sqlite3,test.sqlite3,stderr.log,**/*.log,**/__pycache__/**,**/*.pyc,**/tests/**,**/test_*.py}"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/media/:path*",
+      "destination": "/static/media/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/media/books/:path*",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "attachment"
+        }
+      ]
+    }
+  ]
 }

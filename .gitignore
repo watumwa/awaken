@@ -33,6 +33,5 @@ stderr.log
 .DS_Store
 .vscode/
 .idea/
-EOF
-.vercel
+.vercel/
 .env*

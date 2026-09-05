@@ -527,6 +527,12 @@ def download_book(request, signed_value):
     order_item.downloaded = True
     order_item.save(update_fields=["downloaded"])
 
+    # Repository media is served from Vercel's static CDN in production. Keep
+    # large legacy book files out of the Python Function bundle just as the
+    # free-download flow does.
+    if getattr(settings, "IS_VERCEL", False):
+        return redirect(book_file.url)
+
     # Storage-agnostic read: works for both legacy local media and Vercel Blob.
     mime_type, _ = mimetypes.guess_type(book_file.name)
     try:

@@ -1,0 +1,151 @@
+{% extends "admin/base.html" %}
+
+{% load i18n unfold %}
+
+{% block content %}
+<div class="flex flex-col gap-6 py-6">
+    <section class="bg-primary-800 overflow-hidden px-6 py-7 rounded-default shadow-xs text-white">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <div class="flex items-center gap-2 text-primary-100 text-sm">
+                    <span class="material-symbols-outlined text-base">auto_stories</span>
+                    Digital Library Intelligence
+                </div>
+                <h1 class="font-semibold mt-2 text-2xl text-white">Book download overview</h1>
+                <p class="max-w-2xl mt-2 text-primary-100">See who received each book, spot the titles readers value most, and keep the library looking its best.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ download_list_url }}" class="bg-white font-medium inline-flex items-center gap-2 px-4 py-2 rounded-default text-primary-800 transition-opacity hover:opacity-90">
+                    <span class="material-symbols-outlined text-base">download</span>
+                    View activity
+                </a>
+                <a href="{{ add_book_url }}" class="border border-primary-300 font-medium inline-flex items-center gap-2 px-4 py-2 rounded-default text-white transition-colors hover:bg-primary-700">
+                    <span class="material-symbols-outlined text-base">add</span>
+                    Add a book
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <a href="{{ download_list_url }}" class="bg-white border border-base-200 flex gap-4 items-center p-5 rounded-default shadow-xs transition-all hover:border-primary-300 hover:shadow-md dark:bg-base-900 dark:border-base-800">
+            <span class="bg-primary-100 flex h-11 items-center justify-center rounded-default text-primary-700 w-11 dark:bg-primary-900/40 dark:text-primary-300"><span class="material-symbols-outlined">download</span></span>
+            <span>
+                <span class="block text-base-500 text-xs">All downloads</span>
+                <strong class="block mt-1 text-2xl text-important">{{ download_metrics.total }}</strong>
+            </span>
+        </a>
+        <a href="{{ download_list_url }}" class="bg-white border border-base-200 flex gap-4 items-center p-5 rounded-default shadow-xs transition-all hover:border-primary-300 hover:shadow-md dark:bg-base-900 dark:border-base-800">
+            <span class="bg-emerald-100 flex h-11 items-center justify-center rounded-default text-emerald-700 w-11 dark:bg-emerald-900/30 dark:text-emerald-300"><span class="material-symbols-outlined">groups</span></span>
+            <span>
+                <span class="block text-base-500 text-xs">Unique readers</span>
+                <strong class="block mt-1 text-2xl text-important">{{ download_metrics.readers }}</strong>
+            </span>
+        </a>
+        <a href="{{ download_list_url }}" class="bg-white border border-base-200 flex gap-4 items-center p-5 rounded-default shadow-xs transition-all hover:border-primary-300 hover:shadow-md dark:bg-base-900 dark:border-base-800">
+            <span class="bg-amber-100 flex h-11 items-center justify-center rounded-default text-amber-700 w-11 dark:bg-amber-900/30 dark:text-amber-300"><span class="material-symbols-outlined">calendar_month</span></span>
+            <span>
+                <span class="block text-base-500 text-xs">This month</span>
+                <strong class="block mt-1 text-2xl text-important">{{ download_metrics.this_month }}</strong>
+            </span>
+        </a>
+        <a href="{{ book_list_url }}" class="bg-white border border-base-200 flex gap-4 items-center p-5 rounded-default shadow-xs transition-all hover:border-primary-300 hover:shadow-md dark:bg-base-900 dark:border-base-800">
+            <span class="bg-violet-100 flex h-11 items-center justify-center rounded-default text-violet-700 w-11 dark:bg-violet-900/30 dark:text-violet-300"><span class="material-symbols-outlined">workspace_premium</span></span>
+            <span class="min-w-0">
+                <span class="block text-base-500 text-xs">Most downloaded</span>
+                {% if download_metrics.top_book %}
+                    <strong class="block mt-1 overflow-hidden text-important text-sm text-ellipsis whitespace-nowrap">{{ download_metrics.top_book.title }}</strong>
+                    <span class="block mt-0.5 text-base-500 text-xs">{{ download_metrics.top_book.download_count }} download{{ download_metrics.top_book.download_count|pluralize }}</span>
+                {% else %}
+                    <strong class="block mt-1 text-base-500 text-sm">No downloads yet</strong>
+                {% endif %}
+            </span>
+        </a>
+    </section>
+
+    <section class="bg-white border border-base-200 p-6 rounded-default shadow-xs dark:bg-base-900 dark:border-base-800">
+        <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+                <h2 class="font-semibold text-important">Downloads over the last 14 days</h2>
+                <p class="mt-1 text-base-500 text-sm">A daily view of free books delivered to readers.</p>
+            </div>
+            <a href="{{ download_list_url }}" class="font-medium inline-flex items-center text-primary-700 text-sm hover:text-primary-800 dark:text-primary-400">Full activity <span class="material-symbols-outlined ml-1 text-base">arrow_forward</span></a>
+        </div>
+        <div class="h-72 relative w-full">
+            <canvas class="chart" data-type="line" data-value="{{ download_chart }}" data-options="{{ download_chart_options }}"></canvas>
+        </div>
+    </section>
+
+    <section class="grid gap-6 xl:grid-cols-5">
+        <div class="bg-white border border-base-200 overflow-hidden rounded-default shadow-xs xl:col-span-2 dark:bg-base-900 dark:border-base-800">
+            <div class="border-b border-base-200 flex items-center justify-between px-6 py-4 dark:border-base-800">
+                <div>
+                    <h2 class="font-semibold text-important">Most downloaded books</h2>
+                    <p class="mt-1 text-base-500 text-xs">All-time reader favourites</p>
+                </div>
+                <a href="{{ book_list_url }}" class="text-primary-700 text-sm hover:text-primary-800 dark:text-primary-400">Manage books</a>
+            </div>
+            <ol class="divide-y divide-base-100 dark:divide-base-800">
+                {% for book in top_books %}
+                    <li class="flex gap-3 items-center px-6 py-3.5">
+                        <span class="bg-base-100 flex font-semibold h-7 items-center justify-center rounded-full text-base-600 text-xs w-7 dark:bg-base-800 dark:text-base-300">{{ forloop.counter }}</span>
+                        {% if book.product_image %}
+                            <img src="{{ book.get_cover_url }}" alt="Cover of {{ book.title }}" class="h-11 object-cover rounded w-8">
+                        {% else %}
+                            <span class="bg-primary-50 flex h-11 items-center justify-center rounded text-primary-700 w-8 dark:bg-primary-900/30 dark:text-primary-300"><span class="material-symbols-outlined text-base">menu_book</span></span>
+                        {% endif %}
+                        <div class="min-w-0">
+                            <a href="{% url 'admin:ecomapp_product_change' book.pk %}" class="block font-medium overflow-hidden text-important text-sm text-ellipsis whitespace-nowrap hover:text-primary-700 dark:hover:text-primary-400">{{ book.title }}</a>
+                            <span class="block mt-0.5 text-base-500 text-xs">{{ book.download_count }} download{{ book.download_count|pluralize }}</span>
+                        </div>
+                    </li>
+                {% empty %}
+                    <li class="px-6 py-10 text-base-500 text-center">Download activity will appear here after the first reader requests a book.</li>
+                {% endfor %}
+            </ol>
+        </div>
+
+        <div class="bg-white border border-base-200 overflow-hidden rounded-default shadow-xs xl:col-span-3 dark:bg-base-900 dark:border-base-800">
+            <div class="border-b border-base-200 flex items-center justify-between px-6 py-4 dark:border-base-800">
+                <div>
+                    <h2 class="font-semibold text-important">Recent reader activity</h2>
+                    <p class="mt-1 text-base-500 text-xs">The latest free-book requests</p>
+                </div>
+                <a href="{{ download_list_url }}" class="text-primary-700 text-sm hover:text-primary-800 dark:text-primary-400">View all</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-base-50 text-base-500 text-xs dark:bg-base-800/60">
+                        <tr>
+                            <th class="font-medium px-6 py-3 text-left">Reader</th>
+                            <th class="font-medium px-4 py-3 text-left">Book</th>
+                            <th class="font-medium px-6 py-3 text-right">Downloaded</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-base-100 dark:divide-base-800">
+                        {% for download in recent_downloads %}
+                            <tr>
+                                <td class="px-6 py-3.5">
+                                    <a href="{% url 'admin:ecomapp_freebookdownload_change' download.pk %}" class="block font-medium text-important text-sm hover:text-primary-700 dark:hover:text-primary-400">{{ download.full_name }}</a>
+                                    <span class="block mt-0.5 text-base-500 text-xs">{{ download.email }}</span>
+                                </td>
+                                <td class="px-4 py-3.5">
+                                    <a href="{% url 'admin:ecomapp_product_change' download.product.pk %}" class="font-medium text-sm text-primary-700 hover:text-primary-800 dark:text-primary-400">{{ download.product.title }}</a>
+                                </td>
+                                <td class="px-6 py-3.5 text-base-500 text-right text-xs whitespace-nowrap">{{ download.downloaded_at|date:"M j, Y · H:i" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="3" class="px-6 py-10 text-base-500 text-center">No reader activity yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="flex flex-col gap-6 lg:flex-row lg:gap-8">
+        <div class="grow">{% include "unfold/helpers/app_list_default.html" %}</div>
+        {% include "unfold/helpers/history.html" %}
+    </section>
+</div>
+{% endblock %}

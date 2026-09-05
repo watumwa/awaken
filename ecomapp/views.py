@@ -273,18 +273,28 @@ def free_book_download(request, product_slug):
     if request.method == "POST":
         form = FreeBookDownloadForm(request.POST)
         if form.is_valid():
-            try:
-                file_handle = product.book_file.open("rb")
-            except (FileNotFoundError, OSError):
-                raise Http404("The book file could not be found.")
+            is_vercel = getattr(settings, "IS_VERCEL", False)
+            file_handle = None
+            if not is_vercel:
+                try:
+                    file_handle = product.book_file.open("rb")
+                except (FileNotFoundError, OSError):
+                    raise Http404("The book file could not be found.")
 
             download = form.save(commit=False)
             download.product = product
             try:
                 download.save()
             except Exception:
-                file_handle.close()
+                if file_handle:
+                    file_handle.close()
                 raise
+
+            # Legacy repository media is collected as static files on Vercel.
+            # Redirecting after the audit record is saved keeps large PDFs out
+            # of the Python Function bundle while preserving the public URL.
+            if is_vercel:
+                return HttpResponseRedirect(product.book_file.url)
 
             extension = Path(product.book_file.name).suffix
             filename = f"{get_valid_filename(product.title) or 'book'}{extension}"

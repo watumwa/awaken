@@ -24,7 +24,7 @@ class FreeBookDownloadTests(TestCase):
         cls.media_directory.cleanup()
 
     def setUp(self):
-        creator = get_user_model().objects.create_user(
+        self.creator = get_user_model().objects.create_user(
             email="editor@example.com",
             first_name="Book",
             last_name="Editor",
@@ -34,7 +34,7 @@ class FreeBookDownloadTests(TestCase):
         self.file_content = b"A free test book"
         self.product = Product.objects.create(
             category=category,
-            created_by=creator,
+            created_by=self.creator,
             title="Growing in Faith",
             author="Awakening Saints",
             product_slug="growing-in-faith",
@@ -94,6 +94,45 @@ class FreeBookDownloadTests(TestCase):
         self.assertEqual(download.phone, "+256 700 000000")
         self.assertTrue(download.privacy_consent)
         self.assertFalse(download.marketing_consent)
+
+    @override_settings(IS_VERCEL=True)
+    def test_vercel_redirects_a_legacy_book_to_the_cdn_after_recording_download(self):
+        response = self.client.post(
+            reverse("sales:free_book_download", args=[self.product.product_slug]),
+            {
+                "full_name": "Vercel Reader",
+                "email": "vercel@example.com",
+                "phone": "+256 700 000000",
+                "privacy_consent": "on",
+            },
+        )
+
+        self.assertRedirects(response, self.product.book_file.url, fetch_redirect_response=False)
+        self.assertTrue(
+            FreeBookDownload.objects.filter(email="vercel@example.com", product=self.product).exists()
+        )
+
+    def test_admin_dashboard_shows_reader_and_most_downloaded_book(self):
+        FreeBookDownload.objects.create(
+            product=self.product,
+            full_name="Dashboard Reader",
+            email="dashboard@example.com",
+            phone="+256 700 000000",
+            privacy_consent=True,
+        )
+        self.creator.is_staff = True
+        self.creator.is_superuser = True
+        self.creator.is_active = True
+        self.creator.save(update_fields=["is_staff", "is_superuser", "is_active"])
+        self.client.force_login(self.creator)
+
+        response = self.client.get(reverse("admin:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Book download overview")
+        self.assertContains(response, "Dashboard Reader")
+        self.assertContains(response, self.product.title)
+        self.assertContains(response, "Most downloaded")
 
     def test_book_without_file_is_not_offered_as_a_download(self):
         self.product.book_file.delete(save=True)
