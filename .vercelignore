@@ -1,4 +1,5 @@
 # Local development and generated files do not belong in a Vercel source upload.
+.vercel/
 venv/
 .venv/
 staticfiles/

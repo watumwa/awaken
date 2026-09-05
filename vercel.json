@@ -1,10 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "ecom/wsgi.py": {
-      "excludeFiles": "{venv/**,.venv/**,static/**,staticfiles/**,media/**,db.sqlite3,test.sqlite3,stderr.log,**/*.log,**/__pycache__/**,**/*.pyc,**/tests/**,**/test_*.py}"
+  "builds": [
+    {
+      "src": "ecom/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "framework": "django",
+        "excludeFiles": "{venv/**,.venv/**,static/**,staticfiles/**,media/**,db.sqlite3,test.sqlite3,stderr.log,**/*.log,**/__pycache__/**,**/*.pyc,**/tests/**,**/test_*.py}"
+      }
     }
-  },
+  ],
   "rewrites": [
     {
       "source": "/media/:path*",
