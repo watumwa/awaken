@@ -23,6 +23,8 @@ urlpatterns = [
     path('blog-details/', views.single_blog, name='blog1'),
     path('product-details/<slug:product_slug>/', views.single_product, name='product_detail'),
     path('free-download/<slug:product_slug>/', views.free_book_download, name='free_book_download'),
+    path('download-success/<slug:product_slug>/', views.free_book_download_success, name='free_book_download_success'),
+    path('download-file/<slug:product_slug>/', views.free_book_file, name='free_book_file'),
    
     path("subscribe/", views.subscribe_email, name="subscribe_email"),
     path("send-message/<int:message_id>/", views.send_message_to_subscribers, name="send_message_to_subscribers"),

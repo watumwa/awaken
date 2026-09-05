@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 # from itertools import islice
 from django.core.mail import send_mass_mail
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Count
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -168,13 +169,15 @@ def index(request, cat_slug=None):
     download is free, while the downloader contact form is handled by
     ``free_book_download``.
     """
-    products = Product.products.select_related("category")
+    products = Product.products.select_related("category").annotate(
+        download_count=Count("free_downloads")
+    )
     if cat_slug:
         category = get_object_or_404(Category, cat_slug=cat_slug)
         products = products.filter(category=category)
 
-    product_data = [
-        {
+    def serialize_product(product):
+        return {
             "id": product.id,
             "title": product.title,
             "author": product.author,
@@ -185,8 +188,18 @@ def index(request, cat_slug=None):
             "details_url": reverse("sales:product_detail", args=[product.product_slug]),
             "download_url": reverse("sales:free_book_download", args=[product.product_slug]),
             "has_file": bool(product.book_file),
+            "download_count": product.download_count,
         }
+
+    product_data = [
+        serialize_product(product)
         for product in products
+    ]
+    featured_products_data = [
+        serialize_product(product)
+        for product in products.filter(book_file__isnull=False)
+        .exclude(book_file="")
+        .order_by("-download_count", "-created")[:3]
     ]
 
     categories = Category.objects.order_by("cat_name")
@@ -197,6 +210,7 @@ def index(request, cat_slug=None):
         "main/ecomapp/index.html",
         {
             "products_data": product_data,
+            "featured_products_data": featured_products_data,
             "categories_data": category_data,
         },
     )
@@ -205,9 +219,15 @@ def index(request, cat_slug=None):
 def single_product(request, product_slug):
     product = get_object_or_404(Product.products, product_slug=product_slug)
     reviews = product.reviews.select_related("user").order_by("-timestamp")
+    related_books = (
+        Product.products.select_related("category")
+        .filter(category=product.category)
+        .exclude(pk=product.pk)[:3]
+    )
     context = {
         "product": product,
         "reviews": reviews,
+        "related_books": related_books,
     }
     return render(request, "main/ecomapp/single-product.html", context)
 
@@ -256,8 +276,23 @@ def book_preview(request, product_slug):
     return render(request, "main/ecomapp/preview.html", context)
 
 
+def _book_file_response(product):
+    """Serve the selected book without placing large files in the function."""
+    if getattr(settings, "IS_VERCEL", False):
+        return HttpResponseRedirect(product.book_file.url)
+
+    try:
+        file_handle = product.book_file.open("rb")
+    except (FileNotFoundError, OSError):
+        raise Http404("The book file could not be found.")
+
+    extension = Path(product.book_file.name).suffix
+    filename = f"{get_valid_filename(product.title) or 'book'}{extension}"
+    return FileResponse(file_handle, as_attachment=True, filename=filename)
+
+
 def free_book_download(request, product_slug):
-    """Collect clearly disclosed contact details, then serve the book at no cost."""
+    """Collect consented reader details before making a free book available."""
     product = get_object_or_404(Product.products, product_slug=product_slug)
     if not product.book_file:
         raise Http404("This book is not available for download yet.")
@@ -273,32 +308,13 @@ def free_book_download(request, product_slug):
     if request.method == "POST":
         form = FreeBookDownloadForm(request.POST)
         if form.is_valid():
-            is_vercel = getattr(settings, "IS_VERCEL", False)
-            file_handle = None
-            if not is_vercel:
-                try:
-                    file_handle = product.book_file.open("rb")
-                except (FileNotFoundError, OSError):
-                    raise Http404("The book file could not be found.")
-
             download = form.save(commit=False)
             download.product = product
-            try:
-                download.save()
-            except Exception:
-                if file_handle:
-                    file_handle.close()
-                raise
-
-            # Legacy repository media is collected as static files on Vercel.
-            # Redirecting after the audit record is saved keeps large PDFs out
-            # of the Python Function bundle while preserving the public URL.
-            if is_vercel:
-                return HttpResponseRedirect(product.book_file.url)
-
-            extension = Path(product.book_file.name).suffix
-            filename = f"{get_valid_filename(product.title) or 'book'}{extension}"
-            return FileResponse(file_handle, as_attachment=True, filename=filename)
+            download.save()
+            request.session["free_book_download_product_id"] = product.pk
+            return HttpResponseRedirect(
+                reverse("sales:free_book_download_success", args=[product.product_slug])
+            )
     else:
         form = FreeBookDownloadForm(initial=initial)
 
@@ -307,6 +323,34 @@ def free_book_download(request, product_slug):
         "main/ecomapp/free-book-download.html",
         {"product": product, "form": form},
     )
+
+
+def free_book_download_success(request, product_slug):
+    """Confirm a saved download record before the browser opens the book file."""
+    product = get_object_or_404(Product.products, product_slug=product_slug)
+    if request.session.get("free_book_download_product_id") != product.pk:
+        return HttpResponseRedirect(
+            reverse("sales:free_book_download", args=[product.product_slug])
+        )
+
+    return render(
+        request,
+        "main/ecomapp/download-success.html",
+        {
+            "product": product,
+            "download_file_url": reverse("sales:free_book_file", args=[product.product_slug]),
+        },
+    )
+
+
+def free_book_file(request, product_slug):
+    """Deliver a book only after its reader record was created in this session."""
+    product = get_object_or_404(Product.products, product_slug=product_slug)
+    if request.session.get("free_book_download_product_id") != product.pk:
+        return HttpResponseRedirect(
+            reverse("sales:free_book_download", args=[product.product_slug])
+        )
+    return _book_file_response(product)
 
 
 # subscriptions/views.py

@@ -47,6 +47,37 @@
         line-height: 1.65;
     }
 
+    .library-highlights { margin: 0 0 26px; }
+    .library-highlights__head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 18px;
+        margin: 0 2px 12px;
+    }
+    .library-highlights__head h2 { margin: 0; color: #102a43; font-size: 1.35rem; }
+    .library-highlights__head p { margin: 4px 0 0; color: #627d98; font-size: .92rem; }
+    .featured-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .featured-card {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 14px;
+        min-width: 0;
+        padding: 14px;
+        color: #fff;
+        background: linear-gradient(145deg, #102a43, #146da8);
+        border-radius: 14px;
+        box-shadow: 0 12px 25px rgba(16,42,67,.13);
+    }
+    .featured-card__cover { display: block; overflow: hidden; border-radius: 9px; box-shadow: 0 6px 15px rgba(0,0,0,.2); }
+    .featured-card__cover img { display: block; width: 100%; height: 128px; object-fit: cover; }
+    .featured-card__body { display: flex; flex-direction: column; min-width: 0; }
+    .featured-card__eyebrow { color: #dff6e8; font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .featured-card h3 { margin: 5px 0 4px; overflow: hidden; color: #fff; font-size: 1rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+    .featured-card__author { margin: 0; overflow: hidden; color: rgba(255,255,255,.78); font-size: .86rem; text-overflow: ellipsis; white-space: nowrap; }
+    .featured-card__link { display: inline-flex; align-items: center; gap: 5px; margin-top: auto; color: #fff; font-size: .84rem; font-weight: 800; text-decoration: none; }
+    .featured-card__link:hover { color: #dff6e8; }
+
     .books-tools {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(180px, 260px) 135px;
@@ -235,6 +266,7 @@
         .books-tools { grid-template-columns: 1fr 1fr; }
         .books-search-wrap { grid-column: 1 / -1; }
         .books-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .featured-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 520px) {
@@ -255,6 +287,16 @@
         <div class="books-hero__eyebrow"><i class="fas fa-book-open"></i> Awakening Saints Library</div>
         <h1>Christian books, available to download free.</h1>
         <p>Choose a book, enter your name, email address and phone number, and your PDF will download immediately. No payment or shopping cart is required.</p>
+    </section>
+
+    <section class="library-highlights" id="library-highlights" hidden aria-labelledby="library-highlights-title">
+        <div class="library-highlights__head">
+            <div>
+                <h2 id="library-highlights-title">Library highlights</h2>
+                <p>Reader favourites and newly added books, ready to explore.</p>
+            </div>
+        </div>
+        <div class="featured-grid" id="featured-books-container"></div>
     </section>
 
     <section class="books-tools" aria-label="Book filters">
@@ -284,6 +326,7 @@
 
 {{ categories_data|json_script:"categories-data" }}
 {{ products_data|json_script:"products-data" }}
+{{ featured_products_data|json_script:"featured-products-data" }}
 {% endblock %}
 
 {% block extra_js %}
@@ -291,9 +334,12 @@
 (() => {
     const categories = JSON.parse(document.getElementById('categories-data').textContent || '[]');
     const books = JSON.parse(document.getElementById('products-data').textContent || '[]');
+    const featuredBooks = JSON.parse(document.getElementById('featured-products-data').textContent || '[]');
     const fallbackCover = "{% static 'assets/images/book-cover-placeholder.svg' %}";
 
     const container = document.getElementById('books-container');
+    const highlights = document.getElementById('library-highlights');
+    const featuredContainer = document.getElementById('featured-books-container');
     const pagination = document.getElementById('pagination');
     const search = document.getElementById('book-search');
     const topic = document.getElementById('topic-filter');
@@ -353,6 +399,33 @@
                     </div>
                 </div>
             </article>`;
+    }
+
+    function featuredCard(book) {
+        const title = escapeHTML(book.title);
+        const author = escapeHTML(book.author || 'Awakening Saints');
+        const image = escapeHTML(book.image);
+        const details = escapeHTML(book.details_url);
+        const downloads = Number.parseInt(book.download_count, 10) || 0;
+        const label = downloads ? `${downloads} reader${downloads === 1 ? '' : 's'} downloaded this` : 'New library pick';
+
+        return `
+            <article class="featured-card">
+                <a class="featured-card__cover" href="${details}" aria-label="View ${title}">
+                    <img src="${image}" alt="Cover of ${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackCover}'">
+                </a>
+                <div class="featured-card__body">
+                    <span class="featured-card__eyebrow">${escapeHTML(label)}</span>
+                    <h3>${title}</h3>
+                    <p class="featured-card__author">by ${author}</p>
+                    <a class="featured-card__link" href="${details}">Explore book <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+            </article>`;
+    }
+
+    if (featuredBooks.length) {
+        highlights.hidden = false;
+        featuredContainer.innerHTML = featuredBooks.map(featuredCard).join('');
     }
 
     function renderPagination(totalPages) {

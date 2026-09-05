@@ -60,6 +60,35 @@
 
     .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
+    .related-books {
+        margin-top: 24px;
+        padding: clamp(22px, 4vw, 34px);
+        background: #fff;
+        border: 1px solid #e7edf3;
+        border-radius: 16px;
+    }
+    .related-books h2 { margin: 0 0 4px; color: #102a43; }
+    .related-books__intro { margin: 0 0 18px; color: #627d98; }
+    .related-books__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .related-book {
+        display: grid;
+        grid-template-columns: 68px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        padding: 11px;
+        color: inherit;
+        background: #f7f9fc;
+        border: 1px solid #e7edf3;
+        border-radius: 11px;
+        text-decoration: none;
+        transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .related-book:hover { color: inherit; box-shadow: 0 8px 18px rgba(16,42,67,.1); transform: translateY(-2px); }
+    .related-book img { display: block; width: 68px; height: 88px; border-radius: 7px; object-fit: cover; }
+    .related-book strong, .related-book span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .related-book strong { color: #102a43; font-size: .92rem; }
+    .related-book span { margin-top: 4px; color: #627d98; font-size: .82rem; }
+
     .reviews-card {
         margin-top: 24px;
         padding: clamp(22px, 4vw, 34px);
@@ -86,6 +115,7 @@
     @media (max-width: 760px) {
         .detail-card { grid-template-columns: 1fr; }
         .detail-cover { max-width: 300px; margin: 0 auto; display: block; }
+        .related-books__grid { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}
@@ -121,6 +151,24 @@
             {% endif %}
         </div>
     </section>
+
+    {% if related_books %}
+        <section class="related-books" aria-labelledby="related-books-heading">
+            <h2 id="related-books-heading">More in {{ product.category.cat_name }}</h2>
+            <p class="related-books__intro">Continue exploring books selected for the same journey.</p>
+            <div class="related-books__grid">
+                {% for related_book in related_books %}
+                    <a class="related-book" href="{{ related_book.get_absolute_url }}">
+                        <img src="{{ related_book.get_cover_url }}" alt="Cover of {{ related_book.title }}" onerror="this.onerror=null;this.src='{% static 'assets/images/book-cover-placeholder.svg' %}'">
+                        <span>
+                            <strong>{{ related_book.title }}</strong>
+                            <span>by {{ related_book.author }}</span>
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
 
     <section class="reviews-card">
         <h2>Reader reviews ({{ reviews.count }})</h2>

@@ -84,7 +84,7 @@ class FreeBookDownloadTests(TestCase):
         self.assertContains(response, "This field is required")
         self.assertFalse(FreeBookDownload.objects.exists())
 
-    def test_valid_form_records_reader_and_streams_book_for_free(self):
+    def test_valid_form_records_reader_then_opens_the_book_from_success_page(self):
         url = reverse("sales:free_book_download", args=[self.product.product_slug])
         response = self.client.post(
             url,
@@ -96,9 +96,18 @@ class FreeBookDownloadTests(TestCase):
             },
         )
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(b"".join(response.streaming_content), self.file_content)
-        self.assertIn("attachment;", response.headers["Content-Disposition"])
+        success_url = reverse("sales:free_book_download_success", args=[self.product.product_slug])
+        self.assertRedirects(response, success_url, fetch_redirect_response=False)
+
+        success_response = self.client.get(success_url)
+        self.assertContains(success_response, "Your book is ready")
+
+        file_response = self.client.get(
+            reverse("sales:free_book_file", args=[self.product.product_slug])
+        )
+        self.assertEqual(file_response.status_code, 200)
+        self.assertEqual(b"".join(file_response.streaming_content), self.file_content)
+        self.assertIn("attachment;", file_response.headers["Content-Disposition"])
 
         download = FreeBookDownload.objects.get()
         self.assertEqual(download.product, self.product)
@@ -109,7 +118,7 @@ class FreeBookDownloadTests(TestCase):
         self.assertFalse(download.marketing_consent)
 
     @override_settings(IS_VERCEL=True)
-    def test_vercel_redirects_a_legacy_book_to_the_cdn_after_recording_download(self):
+    def test_vercel_redirects_the_book_file_to_the_cdn_after_recording_download(self):
         response = self.client.post(
             reverse("sales:free_book_download", args=[self.product.product_slug]),
             {
@@ -120,10 +129,75 @@ class FreeBookDownloadTests(TestCase):
             },
         )
 
-        self.assertRedirects(response, self.product.book_file.url, fetch_redirect_response=False)
+        self.assertRedirects(
+            response,
+            reverse("sales:free_book_download_success", args=[self.product.product_slug]),
+            fetch_redirect_response=False,
+        )
+        file_response = self.client.get(
+            reverse("sales:free_book_file", args=[self.product.product_slug])
+        )
+        self.assertRedirects(file_response, self.product.book_file.url, fetch_redirect_response=False)
         self.assertTrue(
             FreeBookDownload.objects.filter(email="vercel@example.com", product=self.product).exists()
         )
+
+    def test_download_success_and_file_routes_require_a_saved_reader_record(self):
+        success_url = reverse("sales:free_book_download_success", args=[self.product.product_slug])
+        form_url = reverse("sales:free_book_download", args=[self.product.product_slug])
+        file_url = reverse("sales:free_book_file", args=[self.product.product_slug])
+
+        self.assertRedirects(
+            self.client.get(success_url), form_url, fetch_redirect_response=False
+        )
+        self.assertRedirects(self.client.get(file_url), form_url, fetch_redirect_response=False)
+
+    def test_honeypot_rejects_automated_download_submissions(self):
+        response = self.client.post(
+            reverse("sales:free_book_download", args=[self.product.product_slug]),
+            {
+                "full_name": "Automated Reader",
+                "email": "bot@example.com",
+                "phone": "+256 700 000000",
+                "privacy_consent": "on",
+                "website": "https://spam.example",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please try again")
+        self.assertFalse(FreeBookDownload.objects.exists())
+
+    def test_books_page_shows_featured_library_titles(self):
+        FreeBookDownload.objects.create(
+            product=self.product,
+            full_name="Featured Reader",
+            email="featured@example.com",
+            phone="+256 700 000000",
+            privacy_consent=True,
+        )
+
+        response = self.client.get(reverse("sales:books"))
+
+        self.assertContains(response, "Library highlights")
+        self.assertContains(response, "featured-products-data")
+
+    def test_book_detail_suggests_other_books_in_its_category(self):
+        related_book = Product.objects.create(
+            category=self.product.category,
+            created_by=self.creator,
+            title="Living with Purpose",
+            author="Awakening Saints",
+            product_slug="living-with-purpose",
+            product_price=Decimal("25.00"),
+            qty_in_stock=0,
+            book_file=SimpleUploadedFile("purpose.pdf", b"purpose"),
+        )
+
+        response = self.client.get(self.product.get_absolute_url())
+
+        self.assertContains(response, "More in Growth")
+        self.assertContains(response, related_book.title)
 
     def test_admin_dashboard_shows_reader_and_most_downloaded_book(self):
         FreeBookDownload.objects.create(

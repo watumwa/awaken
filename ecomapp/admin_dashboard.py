@@ -3,7 +3,7 @@
 import json
 from datetime import timedelta
 
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db.models.functions import TruncDate
 from django.urls import reverse
 from django.utils import timezone
@@ -20,34 +20,51 @@ def downloads_today_badge(request):
 def dashboard_callback(request, context):
     """Add concise, live download analytics to Unfold's admin index page."""
     today = timezone.localdate()
-    month_start = today.replace(day=1)
-    chart_start = today - timedelta(days=13)
+    periods = {
+        "7": {"label": "7 days", "days": 7},
+        "14": {"label": "14 days", "days": 14},
+        "30": {"label": "30 days", "days": 30},
+        "90": {"label": "90 days", "days": 90},
+    }
+    selected_period = request.GET.get("period", "14")
+    if selected_period not in periods:
+        selected_period = "14"
+    period = periods[selected_period]
+    chart_start = today - timedelta(days=period["days"] - 1)
 
     downloads = FreeBookDownload.objects.all()
+    period_downloads = downloads.filter(downloaded_at__date__gte=chart_start)
     daily_rows = (
-        downloads.filter(downloaded_at__date__gte=chart_start)
+        period_downloads
         .annotate(day=TruncDate("downloaded_at"))
         .values("day")
         .annotate(total=Count("id"))
         .order_by("day")
     )
     daily_counts = {row["day"]: row["total"] for row in daily_rows}
-    chart_dates = [chart_start + timedelta(days=offset) for offset in range(14)]
+    chart_dates = [
+        chart_start + timedelta(days=offset) for offset in range(period["days"])
+    ]
 
     top_books = list(
-        Product.objects.annotate(download_count=Count("free_downloads"))
+        Product.objects.annotate(
+            download_count=Count(
+                "free_downloads",
+                filter=Q(free_downloads__downloaded_at__date__gte=chart_start),
+            )
+        )
         .filter(download_count__gt=0)
         .order_by("-download_count", "title")[:5]
     )
     recent_downloads = list(
-        downloads.select_related("product").order_by("-downloaded_at")[:8]
+        period_downloads.select_related("product").order_by("-downloaded_at")[:8]
     )
 
     chart_data = {
         "labels": [day.strftime("%b %-d") for day in chart_dates],
         "datasets": [
             {
-                "label": "Downloads",
+                "label": f"Downloads — last {period['days']} days",
                 "data": [daily_counts.get(day, 0) for day in chart_dates],
                 "borderColor": "#0284c7",
                 "backgroundColor": "rgba(14, 165, 233, 0.14)",
@@ -73,11 +90,17 @@ def dashboard_callback(request, context):
     context.update(
         {
             "download_metrics": {
-                "total": downloads.count(),
-                "readers": downloads.values("email").distinct().count(),
-                "this_month": downloads.filter(downloaded_at__date__gte=month_start).count(),
+                "total": period_downloads.count(),
+                "readers": period_downloads.values("email").distinct().count(),
+                "opted_in": period_downloads.filter(marketing_consent=True).count(),
                 "top_book": top_books[0] if top_books else None,
             },
+            "analytics_periods": [
+                {"value": value, "label": option["label"]}
+                for value, option in periods.items()
+            ],
+            "selected_period": selected_period,
+            "period_label": f"Last {period['days']} days",
             "top_books": top_books,
             "recent_downloads": recent_downloads,
             "download_chart": json.dumps(chart_data),

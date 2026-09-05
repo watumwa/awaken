@@ -12,6 +12,10 @@ phone_validator = RegexValidator(
 
 class FreeBookDownloadForm(forms.ModelForm):
     phone = forms.CharField(max_length=30, validators=[phone_validator])
+    website = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={"autocomplete": "off", "tabindex": "-1"}),
+    )
     privacy_consent = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={"class": "download-checkbox"}),
@@ -59,3 +63,9 @@ class FreeBookDownloadForm(forms.ModelForm):
 
     def clean_phone(self):
         return " ".join(self.cleaned_data["phone"].split())
+
+    def clean_website(self):
+        """Silently reject automated submissions that fill the hidden trap."""
+        if self.cleaned_data["website"]:
+            raise forms.ValidationError("Please try again.")
+        return ""

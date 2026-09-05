@@ -124,12 +124,30 @@
         border-radius: 5px;
     }
 
+    .download-honeypot {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
     .errorlist {
         margin: 6px 0 0;
         padding: 0;
         color: #b42318;
         list-style: none;
         font-size: .86rem;
+    }
+    .download-form-error {
+        margin: 0 0 18px;
+        padding: 11px 13px;
+        color: #8a1c16;
+        background: #fff1f0;
+        border: 1px solid #f5c2bd;
+        border-radius: 8px;
+        font-size: .9rem;
     }
 
     .download-submit {
@@ -174,6 +192,10 @@
 
             <form method="post" novalidate>
                 {% csrf_token %}
+                <div class="download-honeypot" aria-hidden="true">{{ form.website }}</div>
+                {% if form.website.errors %}
+                    <p class="download-form-error" role="alert">We could not validate this request. Please try again.</p>
+                {% endif %}
                 {{ form.non_field_errors }}
 
                 <div class="download-field">
