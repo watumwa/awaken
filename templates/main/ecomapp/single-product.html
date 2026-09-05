@@ -112,7 +112,10 @@
         border-radius: 16px;
     }
 
-    .reviews-card h2 { margin-top: 0; color: #102a43; }
+    .reviews-card h2 { margin: 0; color: #102a43; }
+    .reviews-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .reviews-summary { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; color: #9a6700; background: #fff7df; border-radius: 999px; font-size: .84rem; font-weight: 800; white-space: nowrap; }
+    .reviews-summary i { color: #e4a100; }
     .review-login-note { padding: 14px; background: #f7f9fc; border-radius: 9px; color: #627d98; }
     .review-item { padding: 18px 0; border-top: 1px solid #e7edf3; }
     .review-item:first-of-type { border-top: 0; }
@@ -121,6 +124,10 @@
     .review-date { color: #829ab1; font-size: .86rem; }
     .review-stars { color: #f0a202; margin-bottom: 7px; }
     .review-text { margin: 0; color: #486581; }
+    .verified-reader { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; color: #16703d; font-size: .72rem; font-weight: 800; }
+    .review-invitation { margin-top: 20px; padding: 16px; background: #f0f7fc; border: 1px solid #d8eaf7; border-radius: 11px; }
+    .review-invitation h3 { margin: 0 0 5px; color: #102a43; font-size: 1rem; }
+    .review-invitation p { margin: 0 0 12px; color: #486581; font-size: .9rem; line-height: 1.5; }
 
     .review-form { margin-top: 22px; padding-top: 22px; border-top: 1px solid #e7edf3; }
     .review-form textarea { width: 100%; min-height: 110px; padding: 11px; border: 1px solid #bcccdc; border-radius: 9px; font: inherit; }
@@ -132,6 +139,7 @@
         .detail-cover { max-width: 300px; margin: 0 auto; display: block; }
         .related-books__grid { grid-template-columns: 1fr; }
         .detail-library-meta { grid-template-columns: 1fr; }
+        .reviews-heading { align-items: flex-start; flex-direction: column; }
     }
 </style>
 {% endblock %}
@@ -203,13 +211,18 @@
     {% endif %}
 
     <section class="reviews-card">
-        <h2>Reader reviews ({{ reviews.count }})</h2>
+        <div class="reviews-heading">
+            <h2>Reader reviews ({{ review_count }})</h2>
+            {% if review_count %}
+                <span class="reviews-summary"><i class="fas fa-star" aria-hidden="true"></i> {{ review_average|floatformat:1 }} / 5</span>
+            {% endif %}
+        </div>
 
         <div id="reviews-list">
             {% for review in reviews %}
                 <article class="review-item">
                     <div class="review-meta">
-                        <span class="review-name">{{ review.user.get_full_name|default:review.user.email }}</span>
+                        <span class="review-name">{{ review.display_name }}{% if review.is_verified_downloader %}<span class="verified-reader"><i class="fas fa-circle-check" aria-hidden="true"></i> Verified reader</span>{% endif %}</span>
                         <span class="review-date">{{ review.timestamp|date:"F j, Y" }}</span>
                     </div>
                     <div class="review-stars" aria-label="{{ review.rating }} out of 5 stars">
@@ -224,72 +237,15 @@
             {% endfor %}
         </div>
 
-        {% if user.is_authenticated %}
-            <div class="review-form">
-                <h3>Add a review</h3>
-                <div class="rating-picker" id="rating-picker" aria-label="Choose a rating">
-                    {% for i in "12345" %}<i class="far fa-star" data-rating="{{ forloop.counter }}"></i>{% endfor %}
-                </div>
-                <form id="review-form">
-                    {% csrf_token %}
-                    <input type="hidden" id="rating" value="0">
-                    <textarea id="comment" placeholder="Write your review" required></textarea>
-                    <div style="margin-top:10px;"><button class="book-btn book-btn-primary" type="submit">Submit review</button></div>
-                    <div id="review-message" class="review-message" aria-live="polite"></div>
-                </form>
+        {% if review_url %}
+            <div class="review-invitation">
+                <h3>How was this book?</h3>
+                <p>Because you downloaded this title, you can leave one verified reader review. Reviews are checked before they appear publicly.</p>
+                <a class="book-btn book-btn-primary" href="{{ review_url }}"><i class="fas fa-star" aria-hidden="true"></i> Write a review</a>
             </div>
         {% else %}
-            <p class="review-login-note">Please <a href="{% url 'accounts:login' %}">log in</a> to leave a review.</p>
+            <p class="review-login-note">Reviews are shared by verified readers after they download this book.</p>
         {% endif %}
     </section>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-{% if user.is_authenticated %}
-<script>
-(() => {
-    const stars = [...document.querySelectorAll('#rating-picker [data-rating]')];
-    const ratingInput = document.getElementById('rating');
-    const form = document.getElementById('review-form');
-    const message = document.getElementById('review-message');
-
-    stars.forEach(star => star.addEventListener('click', () => {
-        const value = Number(star.dataset.rating);
-        ratingInput.value = value;
-        stars.forEach((item, index) => {
-            item.classList.toggle('fas', index < value);
-            item.classList.toggle('far', index >= value);
-        });
-    }));
-
-    form.addEventListener('submit', async event => {
-        event.preventDefault();
-        const rating = Number(ratingInput.value);
-        const comment = document.getElementById('comment').value.trim();
-        if (!rating || !comment) {
-            message.textContent = 'Choose a star rating and write a review.';
-            return;
-        }
-
-        try {
-            const response = await fetch('{% url "sales:add_review_ajax" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify({rating, comment, book_id: {{ product.id }}})
-            });
-            const data = await response.json();
-            if (!response.ok || !data.success) throw new Error(data.error || 'Unable to save review.');
-            message.textContent = 'Thank you. Your review was added.';
-            window.location.reload();
-        } catch (error) {
-            message.textContent = error.message;
-        }
-    });
-})();
-</script>
-{% endif %}
 {% endblock %}

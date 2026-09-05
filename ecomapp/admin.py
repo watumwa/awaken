@@ -3,6 +3,7 @@ import csv
 from django.contrib import admin
 from django.db.models import Count
 from django.http import HttpResponse
+from django.utils import timezone
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 
@@ -190,9 +191,60 @@ class BookPreviewAdmin(ModelAdmin):
 
 @admin.register(BookReview)
 class BookReviewAdmin(ModelAdmin):
-    list_display = ("user", "book", "rating", "timestamp")
-    list_filter = ("rating", "timestamp")
-    search_fields = ("user__email", "book__title")
+    list_display = (
+        "reviewer",
+        "book",
+        "rating",
+        "verified_downloader",
+        "status",
+        "timestamp",
+    )
+    list_filter = ("status", "rating", "timestamp")
+    search_fields = ("reviewer_name", "reviewer_email", "user__email", "book__title")
+    list_select_related = ("book", "user", "download", "approved_by")
+    readonly_fields = (
+        "download",
+        "reviewer_name",
+        "reviewer_email",
+        "user",
+        "timestamp",
+        "approved_by",
+        "approved_at",
+    )
+    actions = ("approve_reviews", "reject_reviews")
+
+    @admin.display(description="Reader", ordering="reviewer_name")
+    def reviewer(self, obj):
+        return obj.reviewer_name or obj.display_name
+
+    @admin.display(description="Verified", boolean=True)
+    def verified_downloader(self, obj):
+        return obj.is_verified_downloader
+
+    def save_model(self, request, obj, form, change):
+        if obj.status in {BookReview.APPROVED, BookReview.REJECTED}:
+            obj.approved_by = request.user
+            obj.approved_at = timezone.now()
+        elif obj.status == BookReview.PENDING:
+            obj.approved_by = None
+            obj.approved_at = None
+        super().save_model(request, obj, form, change)
+
+    @admin.action(description="Approve selected reviews")
+    def approve_reviews(self, request, queryset):
+        queryset.update(
+            status=BookReview.APPROVED,
+            approved_by=request.user,
+            approved_at=timezone.now(),
+        )
+
+    @admin.action(description="Reject selected reviews")
+    def reject_reviews(self, request, queryset):
+        queryset.update(
+            status=BookReview.REJECTED,
+            approved_by=request.user,
+            approved_at=timezone.now(),
+        )
 
 
 @admin.register(SermonComment)

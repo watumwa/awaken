@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 
-from .models import FreeBookDownload
+from .models import BookReview, FreeBookDownload
 
 
 phone_validator = RegexValidator(
@@ -69,3 +69,34 @@ class FreeBookDownloadForm(forms.ModelForm):
         if self.cleaned_data["website"]:
             raise forms.ValidationError("Please try again.")
         return ""
+
+
+class VerifiedBookReviewForm(forms.ModelForm):
+    """A concise review form available only through a signed download link."""
+
+    rating = forms.TypedChoiceField(
+        choices=tuple((value, value) for value in range(1, 6)),
+        coerce=int,
+        empty_value=None,
+        widget=forms.RadioSelect(attrs={"class": "review-rating-input"}),
+        label="Your rating",
+    )
+    comment = forms.CharField(
+        min_length=12,
+        max_length=1000,
+        widget=forms.Textarea(
+            attrs={
+                "rows": 5,
+                "placeholder": "What did you find helpful or meaningful about this book?",
+            }
+        ),
+        label="Your review",
+        help_text="Please write at least 12 characters. Your email address and phone number are never shown.",
+    )
+
+    class Meta:
+        model = BookReview
+        fields = ("rating", "comment")
+
+    def clean_comment(self):
+        return " ".join(self.cleaned_data["comment"].split())

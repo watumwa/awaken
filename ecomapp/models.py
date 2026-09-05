@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -306,16 +307,73 @@ class BookPreview(models.Model):
 
 
 class BookReview(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    STATUS_CHOICES = (
+        (PENDING, "Pending moderation"),
+        (APPROVED, "Approved"),
+        (REJECTED, "Rejected"),
+    )
+
+    # Existing account-based reviews remain supported, while readers who
+    # downloaded a free book can review without first creating an account.
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     book = models.ForeignKey(
         "Product", on_delete=models.CASCADE, related_name="reviews"
     )
-    rating = models.IntegerField()
+    download = models.ForeignKey(
+        "FreeBookDownload",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reviews",
+    )
+    reviewer_name = models.CharField(max_length=255, blank=True)
+    reviewer_email = models.EmailField(blank=True)
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     comment = models.TextField(blank=True)
+    status = models.CharField(
+        max_length=12,
+        choices=STATUS_CHOICES,
+        default=APPROVED,
+        db_index=True,
+    )
+    approved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="approved_book_reviews",
+    )
+    approved_at = models.DateTimeField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ("-timestamp",)
+        indexes = [models.Index(fields=["book", "status"])]
+
+    @property
+    def display_name(self):
+        """Expose only a reader's first name on the public book page."""
+        name = self.reviewer_name or (
+            self.user.get_full_name() if self.user_id else ""
+        )
+        return name.split()[0] if name else "Verified reader"
+
+    @property
+    def is_verified_downloader(self):
+        return bool(self.download_id)
+
     def __str__(self):
-        return f"{self.user} review on {self.book.title}"
+        return f"{self.display_name} review on {self.book.title}"
 
 
 class SermonContent(models.Model):

@@ -1,0 +1,92 @@
+{% extends 'bookbase.html' %}
+{% load static %}
+
+{% block title %}Review {{ product.title }} | Awakening Saints{% endblock %}
+
+{% block extra_css %}
+<style>
+    .verified-review-shell { max-width: 920px; margin: 30px auto 64px; }
+    .verified-review-back { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 17px; color: #0879bd; font-weight: 800; text-decoration: none; }
+    .verified-review-card { display: grid; grid-template-columns: minmax(190px, 260px) minmax(0, 1fr); gap: clamp(26px, 5vw, 50px); padding: clamp(25px, 5vw, 46px); background: #fff; border: 1px solid #e7edf3; border-radius: 18px; box-shadow: 0 16px 40px rgba(16,42,67,.1); }
+    .verified-review-cover { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 11px; box-shadow: 0 12px 26px rgba(16,42,67,.16); }
+    .verified-review-kicker { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 11px; padding: 5px 9px; color: #17663a; background: #e8f7ee; border-radius: 999px; font-size: .75rem; font-weight: 800; }
+    .verified-review-card h1 { margin: 0 0 8px; color: #102a43; font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.14; }
+    .verified-review-book { margin: 0 0 22px; color: #627d98; }
+    .verified-review-intro { margin: 0 0 22px; color: #486581; line-height: 1.6; }
+    .verified-review-success { margin: 0 0 19px; padding: 12px 14px; color: #17663a; background: #e8f7ee; border: 1px solid #c7ead5; border-radius: 9px; line-height: 1.45; }
+    .review-status { display: inline-flex; margin: 0 0 18px; padding: 7px 10px; color: #755b00; background: #fff7df; border-radius: 999px; font-size: .82rem; font-weight: 800; }
+    .review-status--approved { color: #17663a; background: #e8f7ee; }
+    .verified-review-field { margin-bottom: 21px; }
+    .verified-review-field > label, .rating-label { display: block; margin-bottom: 9px; color: #243b53; font-weight: 800; }
+    .verified-review-field textarea { box-sizing: border-box; display: block; width: 100%; min-height: 130px; padding: 12px 13px; color: #243b53; border: 1px solid #bcccdc; border-radius: 9px; font: inherit; line-height: 1.5; resize: vertical; }
+    .verified-review-field textarea:focus { border-color: #1098e8; outline: none; box-shadow: 0 0 0 3px rgba(16,152,232,.13); }
+    .rating-options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .rating-option { position: relative; display: inline-flex; }
+    .rating-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .rating-option span { display: inline-flex; align-items: center; gap: 5px; min-height: 40px; padding: 8px 11px; color: #627d98; background: #f7f9fc; border: 1px solid #d9e2ec; border-radius: 8px; cursor: pointer; font-size: .9rem; font-weight: 800; transition: border-color .15s ease, background .15s ease, color .15s ease; }
+    .rating-option input:checked + span { color: #8a6200; background: #fff7df; border-color: #e4b954; }
+    .rating-option input:focus-visible + span { outline: 3px solid rgba(16,152,232,.22); outline-offset: 2px; }
+    .rating-option span i { color: #e4a100; }
+    .verified-review-help { margin: 8px 0 0; color: #829ab1; font-size: .82rem; line-height: 1.45; }
+    .verified-review-field .errorlist { margin: 7px 0 0; padding: 0; color: #b42318; list-style: none; font-size: .86rem; }
+    .verified-review-submit { min-height: 48px; border: 0; cursor: pointer; }
+    @media (max-width: 680px) {
+        .verified-review-shell { margin-top: 18px; }
+        .verified-review-card { grid-template-columns: 1fr; }
+        .verified-review-cover { max-width: 220px; margin: 0 auto; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="book-page-wrap verified-review-shell">
+    <a class="verified-review-back" href="{{ product.get_absolute_url }}"><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to book</a>
+    <section class="verified-review-card" aria-labelledby="verified-review-heading">
+        <div>
+            <img class="verified-review-cover" src="{{ product.get_cover_url }}" alt="Cover of {{ product.title }}" onerror="this.onerror=null;this.src='{% static 'assets/images/book-cover-placeholder.svg' %}'">
+        </div>
+        <div>
+            <span class="verified-review-kicker"><i class="fas fa-circle-check" aria-hidden="true"></i> Verified reader review</span>
+            <h1 id="verified-review-heading">Share your thoughts</h1>
+            <p class="verified-review-book">Reviewing <strong>{{ product.title }}</strong></p>
+
+            {% if submitted %}
+                <p class="verified-review-success" role="status"><strong>Thank you.</strong> Your review has been received and will appear once it has been approved.</p>
+            {% endif %}
+
+            {% if existing_review %}
+                <span class="review-status {% if existing_review.status == 'approved' %}review-status--approved{% endif %}">
+                    {% if existing_review.status == 'approved' %}Your review is live{% elif existing_review.status == 'rejected' %}You can submit an updated review{% else %}Your review is awaiting approval{% endif %}
+                </span>
+            {% endif %}
+
+            <p class="verified-review-intro">Your review helps other readers. We show only your first name and mark it as a verified reader review; your email address and phone number stay private.</p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="verified-review-field">
+                    <span class="rating-label">{{ form.rating.label }}</span>
+                    <div class="rating-options">
+                        {% for radio in form.rating %}
+                            <label class="rating-option">
+                                {{ radio.tag }}
+                                <span><i class="fas fa-star" aria-hidden="true"></i> {{ radio.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {{ form.rating.errors }}
+                </div>
+
+                <div class="verified-review-field">
+                    <label for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
+                    {{ form.comment }}
+                    {% if form.comment.help_text %}<p class="verified-review-help">{{ form.comment.help_text }}</p>{% endif %}
+                    {{ form.comment.errors }}
+                </div>
+
+                <button class="book-btn book-btn-primary verified-review-submit" type="submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> {% if existing_review %}Update review{% else %}Submit review{% endif %}</button>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}

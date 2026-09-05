@@ -25,6 +25,15 @@
           "value": "attachment"
         }
       ]
+    },
+    {
+      "source": "/static/media/books/:path*",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "attachment"
+        }
+      ]
     }
   ]
 }

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -8,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 # from itertools import islice
 from django.core.mail import send_mass_mail
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count
+from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
+from django.db.models import Avg, Count
 from django.http import FileResponse, Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -23,13 +25,69 @@ from .models import (
     BookReview,
     Category,
     EmailSubscriber,
+    FreeBookDownload,
     Product,
     SermonComment,
     SermonContent,
     SubscriberMessage,
 )
-from .forms import FreeBookDownloadForm
+from .forms import FreeBookDownloadForm, VerifiedBookReviewForm
 from .utils import get_media_duration  # if using separate utils file
+
+
+DOWNLOAD_GRANTS_SESSION_KEY = "free_book_download_grants"
+REVIEW_LINK_MAX_AGE_SECONDS = 60 * 60 * 24 * 365
+
+
+def _review_signer():
+    return TimestampSigner(salt="awakening-saints-verified-book-review")
+
+
+def _review_url(download):
+    token = _review_signer().sign(str(download.pk))
+    return reverse(
+        "sales:verified_book_review",
+        kwargs={"download_id": download.pk, "token": token},
+    )
+
+
+def _session_download_for_book(request, product):
+    """Return this browser's saved download record for a particular book."""
+    grants = request.session.get(DOWNLOAD_GRANTS_SESSION_KEY, [])
+    if not isinstance(grants, list):
+        return None
+
+    for grant in reversed(grants):
+        if not isinstance(grant, dict) or grant.get("product_id") != product.pk:
+            continue
+        download_id = grant.get("download_id")
+        if isinstance(download_id, int):
+            return FreeBookDownload.objects.filter(
+                pk=download_id, product=product
+            ).first()
+    return None
+
+
+def _has_download_access(request, product):
+    """Support the new multi-book grant and the short-lived legacy session key."""
+    return bool(_session_download_for_book(request, product)) or (
+        request.session.get("free_book_download_product_id") == product.pk
+    )
+
+
+def _remember_download(request, download):
+    """Keep a small browser-local record so readers can return to review later."""
+    grants = request.session.get(DOWNLOAD_GRANTS_SESSION_KEY, [])
+    if not isinstance(grants, list):
+        grants = []
+    grants = [
+        grant
+        for grant in grants
+        if isinstance(grant, dict) and grant.get("product_id") != download.product_id
+    ]
+    grants.append({"product_id": download.product_id, "download_id": download.pk})
+    request.session[DOWNLOAD_GRANTS_SESSION_KEY] = grants[-10:]
+    request.session.pop("free_book_download_product_id", None)
 
 
 def indexone(request):
@@ -224,7 +282,14 @@ def single_product(request, product_slug):
         ),
         product_slug=product_slug,
     )
-    reviews = product.reviews.select_related("user").order_by("-timestamp")
+    reviews = (
+        product.reviews.filter(status=BookReview.APPROVED)
+        .select_related("user")
+        .order_by("-timestamp")
+    )
+    review_count = reviews.count()
+    review_average = reviews.aggregate(average=Avg("rating"))["average"]
+    reader_download = _session_download_for_book(request, product)
     related_books = (
         Product.products.select_related("category").annotate(
             download_count=Count("free_downloads")
@@ -235,42 +300,74 @@ def single_product(request, product_slug):
     context = {
         "product": product,
         "reviews": reviews,
+        "review_count": review_count,
+        "review_average": review_average,
+        "review_url": _review_url(reader_download) if reader_download else None,
         "related_books": related_books,
     }
     return render(request, "main/ecomapp/single-product.html", context)
 
 
-@csrf_exempt
 @login_required
+@require_POST
 def add_review_ajax(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            rating = int(data.get("rating", 0))
-            comment = data.get("comment", "").strip()
-            book_id = data.get("book_id")
+    """Keep the legacy account endpoint limited to verified downloaders too."""
+    try:
+        data = json.loads(request.body)
+        if not isinstance(data, dict):
+            raise TypeError
+        rating = int(data.get("rating", 0))
+        comment = " ".join(str(data.get("comment") or "").split())
+        book = Product.objects.get(id=data.get("book_id"))
+    except (json.JSONDecodeError, TypeError, ValueError, Product.DoesNotExist):
+        return JsonResponse({"success": False, "error": "Invalid review request."}, status=400)
 
-            if not (1 <= rating <= 5):
-                return JsonResponse({"success": False, "error": "Invalid rating."})
+    if not (1 <= rating <= 5) or len(comment) < 12:
+        return JsonResponse(
+            {"success": False, "error": "Choose a rating and write a short review."},
+            status=400,
+        )
 
-            book = Product.objects.get(id=book_id)
+    email = request.user.email.strip().lower()
+    download = (
+        FreeBookDownload.objects.filter(product=book, email__iexact=email)
+        .order_by("-downloaded_at")
+        .first()
+        if email
+        else None
+    )
+    if not download:
+        return JsonResponse(
+            {
+                "success": False,
+                "error": "Reviews are available after you download this book.",
+            },
+            status=403,
+        )
 
-            review = BookReview.objects.create(
-                user=request.user, book=book, rating=rating, comment=comment
-            )
-
-            return JsonResponse(
-                {
-                    "success": True,
-                    "username": request.user.get_full_name() or request.user.username,
-                    "rating": rating,
-                    "comment": comment,
-                }
-            )
-
-        except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
-    return JsonResponse({"success": False, "error": "Invalid request"})
+    review, _ = BookReview.objects.update_or_create(
+        book=book,
+        reviewer_email=download.email,
+        defaults={
+            "user": request.user,
+            "download": download,
+            "reviewer_name": download.full_name,
+            "rating": rating,
+            "comment": comment,
+            "status": BookReview.PENDING,
+            "approved_by": None,
+            "approved_at": None,
+        },
+    )
+    return JsonResponse(
+        {
+            "success": True,
+            "username": review.display_name,
+            "rating": review.rating,
+            "comment": review.comment,
+            "message": "Thank you. Your review is awaiting approval.",
+        }
+    )
 
 
 def book_preview(request, product_slug):
@@ -287,7 +384,7 @@ def book_preview(request, product_slug):
 def _book_file_response(product):
     """Serve the selected book without placing large files in the function."""
     if getattr(settings, "IS_VERCEL", False):
-        return HttpResponseRedirect(product.book_file.url)
+        return HttpResponseRedirect(_download_target_url(product.book_file.url))
 
     try:
         file_handle = product.book_file.open("rb")
@@ -297,6 +394,19 @@ def _book_file_response(product):
     extension = Path(product.book_file.name).suffix
     filename = f"{get_valid_filename(product.title) or 'book'}{extension}"
     return FileResponse(file_handle, as_attachment=True, filename=filename)
+
+
+def _download_target_url(file_url):
+    """Use Vercel Blob's attachment URL while retaining legacy media paths."""
+    parsed_url = urlparse(file_url)
+    if not parsed_url.hostname or not parsed_url.hostname.endswith(
+        ".blob.vercel-storage.com"
+    ):
+        return file_url
+
+    query = dict(parse_qsl(parsed_url.query, keep_blank_values=True))
+    query["download"] = "1"
+    return urlunparse(parsed_url._replace(query=urlencode(query)))
 
 
 def free_book_download(request, product_slug):
@@ -319,7 +429,7 @@ def free_book_download(request, product_slug):
             download = form.save(commit=False)
             download.product = product
             download.save()
-            request.session["free_book_download_product_id"] = product.pk
+            _remember_download(request, download)
             return HttpResponseRedirect(
                 reverse("sales:free_book_download_success", args=[product.product_slug])
             )
@@ -336,7 +446,8 @@ def free_book_download(request, product_slug):
 def free_book_download_success(request, product_slug):
     """Confirm a saved download record before the browser opens the book file."""
     product = get_object_or_404(Product.products, product_slug=product_slug)
-    if request.session.get("free_book_download_product_id") != product.pk:
+    download = _session_download_for_book(request, product)
+    if not _has_download_access(request, product):
         return HttpResponseRedirect(
             reverse("sales:free_book_download", args=[product.product_slug])
         )
@@ -347,6 +458,7 @@ def free_book_download_success(request, product_slug):
         {
             "product": product,
             "download_file_url": reverse("sales:free_book_file", args=[product.product_slug]),
+            "review_url": _review_url(download) if download else None,
         },
     )
 
@@ -354,11 +466,63 @@ def free_book_download_success(request, product_slug):
 def free_book_file(request, product_slug):
     """Deliver a book only after its reader record was created in this session."""
     product = get_object_or_404(Product.products, product_slug=product_slug)
-    if request.session.get("free_book_download_product_id") != product.pk:
+    if not _has_download_access(request, product):
         return HttpResponseRedirect(
             reverse("sales:free_book_download", args=[product.product_slug])
         )
     return _book_file_response(product)
+
+
+def verified_book_review(request, download_id, token):
+    """Collect one signed, moderation-first review from a recorded downloader."""
+    try:
+        signed_download_id = _review_signer().unsign(
+            token, max_age=REVIEW_LINK_MAX_AGE_SECONDS
+        )
+    except (BadSignature, SignatureExpired):
+        raise Http404("This review link is invalid or has expired.")
+
+    if signed_download_id != str(download_id):
+        raise Http404("This review link is invalid or has expired.")
+
+    download = get_object_or_404(
+        FreeBookDownload.objects.select_related("product", "product__category"),
+        pk=download_id,
+    )
+    product = download.product
+    existing_review = (
+        BookReview.objects.filter(book=product, reviewer_email__iexact=download.email)
+        .order_by("-timestamp")
+        .first()
+    )
+
+    if request.method == "POST":
+        form = VerifiedBookReviewForm(request.POST, instance=existing_review)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.book = product
+            review.download = download
+            review.reviewer_name = download.full_name
+            review.reviewer_email = download.email
+            review.status = BookReview.PENDING
+            review.approved_by = None
+            review.approved_at = None
+            review.save()
+            return HttpResponseRedirect(f"{request.path}?submitted=1")
+    else:
+        form = VerifiedBookReviewForm(instance=existing_review)
+
+    return render(
+        request,
+        "main/ecomapp/verified-book-review.html",
+        {
+            "product": product,
+            "download": download,
+            "form": form,
+            "existing_review": existing_review,
+            "submitted": request.GET.get("submitted") == "1",
+        },
+    )
 
 
 # subscriptions/views.py

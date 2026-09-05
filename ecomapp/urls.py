@@ -25,6 +25,7 @@ urlpatterns = [
     path('free-download/<slug:product_slug>/', views.free_book_download, name='free_book_download'),
     path('download-success/<slug:product_slug>/', views.free_book_download_success, name='free_book_download_success'),
     path('download-file/<slug:product_slug>/', views.free_book_file, name='free_book_file'),
+    path('book-review/<int:download_id>/<str:token>/', views.verified_book_review, name='verified_book_review'),
    
     path("subscribe/", views.subscribe_email, name="subscribe_email"),
     path("send-message/<int:message_id>/", views.send_message_to_subscribers, name="send_message_to_subscribers"),

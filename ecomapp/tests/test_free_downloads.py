@@ -2,12 +2,15 @@ import tempfile
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from django.contrib.admin.sites import AdminSite
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 from django.templatetags.static import static
 from django.urls import reverse
 
-from ecomapp.models import Category, FreeBookDownload, Product
+from ecomapp.models import BookReview, Category, FreeBookDownload, Product
+from ecomapp.admin import BookReviewAdmin
+from ecomapp.views import _download_target_url
 
 
 class FreeBookDownloadTests(TestCase):
@@ -102,6 +105,7 @@ class FreeBookDownloadTests(TestCase):
 
         success_response = self.client.get(success_url)
         self.assertContains(success_response, "Your book is ready")
+        self.assertContains(success_response, "Rate and review this book")
 
         file_response = self.client.get(
             reverse("sales:free_book_file", args=[self.product.product_slug])
@@ -117,6 +121,88 @@ class FreeBookDownloadTests(TestCase):
         self.assertEqual(download.phone, "+256 700 000000")
         self.assertTrue(download.privacy_consent)
         self.assertFalse(download.marketing_consent)
+
+    def test_verified_downloader_can_submit_a_review_for_moderation(self):
+        download_response = self.client.post(
+            reverse("sales:free_book_download", args=[self.product.product_slug]),
+            {
+                "full_name": "Test Reader",
+                "email": "reader@example.com",
+                "phone": "+256 700 000000",
+                "privacy_consent": "on",
+            },
+        )
+        self.assertEqual(download_response.status_code, 302)
+
+        success_response = self.client.get(download_response["Location"])
+        review_url = success_response.context["review_url"]
+        self.assertIsNotNone(review_url)
+        self.assertContains(self.client.get(review_url), "Verified reader review")
+
+        review_response = self.client.post(
+            review_url,
+            {
+                "rating": "5",
+                "comment": "A clear and encouraging guide for everyday faith.",
+            },
+        )
+        self.assertEqual(review_response.status_code, 302)
+
+        review = BookReview.objects.get()
+        self.assertEqual(review.book, self.product)
+        self.assertEqual(review.download, FreeBookDownload.objects.get())
+        self.assertEqual(review.reviewer_name, "Test Reader")
+        self.assertEqual(review.reviewer_email, "reader@example.com")
+        self.assertEqual(review.status, BookReview.PENDING)
+
+        hidden_review_page = self.client.get(self.product.get_absolute_url())
+        self.assertNotContains(hidden_review_page, review.comment)
+
+        review.status = BookReview.APPROVED
+        review.save(update_fields=["status"])
+        public_review_page = self.client.get(self.product.get_absolute_url())
+        self.assertContains(public_review_page, review.comment)
+        self.assertContains(public_review_page, "Verified reader")
+        self.assertContains(public_review_page, "5.0 / 5")
+
+    def test_review_link_cannot_be_guessed_or_tampered_with(self):
+        response = self.client.get(
+            reverse(
+                "sales:verified_book_review",
+                kwargs={"download_id": 9999, "token": "not-a-valid-token"},
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_admin_can_approve_a_verified_reader_review(self):
+        download = FreeBookDownload.objects.create(
+            product=self.product,
+            full_name="Review Reader",
+            email="review@example.com",
+            phone="+256 700 000000",
+            privacy_consent=True,
+        )
+        review = BookReview.objects.create(
+            book=self.product,
+            download=download,
+            reviewer_name=download.full_name,
+            reviewer_email=download.email,
+            rating=4,
+            comment="A thoughtful and practical book for everyday readers.",
+            status=BookReview.PENDING,
+        )
+        request = RequestFactory().post("/admin/ecomapp/bookreview/")
+        request.user = self.creator
+
+        BookReviewAdmin(BookReview, AdminSite()).approve_reviews(
+            request, BookReview.objects.filter(pk=review.pk)
+        )
+        review.refresh_from_db()
+
+        self.assertEqual(review.status, BookReview.APPROVED)
+        self.assertEqual(review.approved_by, self.creator)
+        self.assertIsNotNone(review.approved_at)
 
     @override_settings(IS_VERCEL=True)
     def test_vercel_redirects_the_book_file_to_the_cdn_after_recording_download(self):
@@ -141,6 +227,19 @@ class FreeBookDownloadTests(TestCase):
         self.assertRedirects(file_response, self.product.book_file.url, fetch_redirect_response=False)
         self.assertTrue(
             FreeBookDownload.objects.filter(email="vercel@example.com", product=self.product).exists()
+        )
+
+    def test_blob_download_target_uses_vercels_forced_download_parameter(self):
+        blob_url = (
+            "https://store.public.blob.vercel-storage.com/books/faith.pdf?version=2"
+        )
+
+        self.assertEqual(
+            _download_target_url(blob_url),
+            "https://store.public.blob.vercel-storage.com/books/faith.pdf?version=2&download=1",
+        )
+        self.assertEqual(
+            _download_target_url("/media/books/faith.pdf"), "/media/books/faith.pdf"
         )
 
     def test_download_success_and_file_routes_require_a_saved_reader_record(self):
