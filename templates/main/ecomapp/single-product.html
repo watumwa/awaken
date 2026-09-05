@@ -43,7 +43,22 @@
 
     .detail-info h1 { margin: 0 0 8px; color: #102a43; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; }
     .detail-author { margin-bottom: 22px; color: #627d98; font-size: 1.05rem; }
+    .detail-library-meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        margin: 0 0 24px;
+        overflow: hidden;
+        background: #d9e2ec;
+        border: 1px solid #d9e2ec;
+        border-radius: 10px;
+    }
+    .detail-library-meta div { min-width: 0; padding: 12px; background: #f8fafc; }
+    .detail-library-meta span { display: block; margin-bottom: 4px; color: #829ab1; font-size: .7rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .detail-library-meta strong { display: block; overflow: hidden; color: #243b53; font-size: .88rem; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-library-meta i { margin-right: 4px; color: #0879bd; }
     .detail-description { color: #486581; line-height: 1.75; }
+    .detail-description h2 { margin: 0 0 9px; color: #102a43; font-size: 1.1rem; }
     .detail-description p:last-child { margin-bottom: 0; }
 
     .detail-download-note {
@@ -116,6 +131,7 @@
         .detail-card { grid-template-columns: 1fr; }
         .detail-cover { max-width: 300px; margin: 0 auto; display: block; }
         .related-books__grid { grid-template-columns: 1fr; }
+        .detail-library-meta { grid-template-columns: 1fr; }
     }
 </style>
 {% endblock %}
@@ -133,7 +149,23 @@
             <h1>{{ product.title }}</h1>
             <div class="detail-author">by {{ product.author }}</div>
 
+            <div class="detail-library-meta" aria-label="Book information">
+                <div>
+                    <span>Access</span>
+                    <strong><i class="fas fa-gift" aria-hidden="true"></i>Free e-book</strong>
+                </div>
+                <div>
+                    <span>Readers</span>
+                    <strong><i class="fas fa-download" aria-hidden="true"></i>{% if product.download_count %}{{ product.download_count }} download{{ product.download_count|pluralize }}{% else %}New to the library{% endif %}</strong>
+                </div>
+                <div>
+                    <span>Category</span>
+                    <strong><i class="fas fa-folder-open" aria-hidden="true"></i>{{ product.category.cat_name }}</strong>
+                </div>
+            </div>
+
             <div class="detail-description">
+                <h2>About this book</h2>
                 {% if product.description %}
                     {{ product.description|safe }}
                 {% else %}

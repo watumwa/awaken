@@ -189,6 +189,7 @@ def index(request, cat_slug=None):
             "download_url": reverse("sales:free_book_download", args=[product.product_slug]),
             "has_file": bool(product.book_file),
             "download_count": product.download_count,
+            "created_at": product.created.isoformat(),
         }
 
     product_data = [
@@ -217,10 +218,17 @@ def index(request, cat_slug=None):
 
 
 def single_product(request, product_slug):
-    product = get_object_or_404(Product.products, product_slug=product_slug)
+    product = get_object_or_404(
+        Product.products.select_related("category").annotate(
+            download_count=Count("free_downloads")
+        ),
+        product_slug=product_slug,
+    )
     reviews = product.reviews.select_related("user").order_by("-timestamp")
     related_books = (
-        Product.products.select_related("category")
+        Product.products.select_related("category").annotate(
+            download_count=Count("free_downloads")
+        )
         .filter(category=product.category)
         .exclude(pk=product.pk)[:3]
     )

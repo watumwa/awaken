@@ -47,7 +47,28 @@
         line-height: 1.65;
     }
 
-    .library-highlights { margin: 0 0 26px; }
+    .catalogue-heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin: 0 2px 18px;
+    }
+    .catalogue-heading__eyebrow {
+        display: block;
+        margin-bottom: 5px;
+        color: #0879bd;
+        font-size: .73rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+    .catalogue-heading h2 { margin: 0; color: #102a43; font-size: clamp(1.55rem, 3vw, 2.1rem); line-height: 1.15; }
+    .catalogue-heading p { max-width: 620px; margin: 7px 0 0; color: #627d98; line-height: 1.55; }
+    .catalogue-heading__count { color: #486581; font-size: .9rem; text-align: right; white-space: nowrap; }
+    .catalogue-heading__count strong { color: #102a43; }
+
+    .library-highlights { margin: 0 0 30px; }
     .library-highlights__head {
         display: flex;
         align-items: end;
@@ -80,7 +101,7 @@
 
     .books-tools {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(180px, 260px) 135px;
+        grid-template-columns: minmax(0, 1fr) minmax(175px, 230px) minmax(175px, 220px);
         gap: 12px;
         margin-bottom: 18px;
         padding: 16px;
@@ -131,9 +152,10 @@
 
     .books-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 24px;
-        padding-bottom: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 270px));
+        justify-content: center;
+        gap: 22px;
+        padding-bottom: 18px;
     }
 
     .book-card {
@@ -153,7 +175,7 @@
 
     .book-cover-link {
         display: block;
-        aspect-ratio: 3 / 4;
+        aspect-ratio: 4 / 5;
         overflow: hidden;
         background: #edf2f7;
     }
@@ -168,45 +190,54 @@
 
     .book-card:hover .book-cover { transform: scale(1.018); }
 
-    .book-card__body { padding: 18px; }
+    .book-card__body { padding: 15px 16px 16px; }
 
     .book-free-badge {
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        margin-bottom: 10px;
-        padding: 5px 9px;
+        padding: 4px 7px;
         color: #17663a;
         background: #e8f7ee;
         border-radius: 999px;
-        font-size: .76rem;
+        font-size: .67rem;
         font-weight: 800;
         letter-spacing: .03em;
         text-transform: uppercase;
+        white-space: nowrap;
     }
 
     .book-title {
-        min-height: 2.8em;
-        margin: 0 0 7px;
+        min-height: 2.65em;
+        margin: 0 0 5px;
         color: #102a43;
         font-size: 1.08rem;
         line-height: 1.4;
     }
+    .book-title a { color: inherit; text-decoration: none; }
+    .book-title a:hover { color: #0879bd; }
 
     .book-author {
-        min-height: 1.4em;
-        margin-bottom: 16px;
+        overflow: hidden;
+        min-height: 1.35em;
+        margin-bottom: 9px;
         color: #627d98;
         font-size: .9rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
+
+    .book-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; color: #627d98; font-size: .78rem; }
+    .book-download-count { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; white-space: nowrap; }
+    .book-download-count i { color: #0879bd; }
 
     .book-actions {
         display: grid;
-        grid-template-columns: 1fr 1.12fr;
+        grid-template-columns: .8fr 1.45fr;
         gap: 8px;
     }
 
-    .book-actions .book-btn { min-height: 42px; padding: 9px 10px; font-size: .86rem; }
+    .book-actions .book-btn { min-height: 42px; padding: 9px 8px; font-size: .8rem; white-space: nowrap; }
 
     .book-unavailable {
         display: inline-flex;
@@ -258,22 +289,20 @@
 
     .books-pagination button:disabled { opacity: .45; cursor: not-allowed; }
 
-    @media (max-width: 1040px) {
-        .books-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-
     @media (max-width: 780px) {
         .books-tools { grid-template-columns: 1fr 1fr; }
         .books-search-wrap { grid-column: 1 / -1; }
-        .books-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .books-grid { grid-template-columns: repeat(2, minmax(0, 270px)); gap: 16px; }
         .featured-grid { grid-template-columns: 1fr; }
+        .catalogue-heading { align-items: flex-start; flex-direction: column; gap: 10px; }
+        .catalogue-heading__count { text-align: left; }
     }
 
     @media (max-width: 520px) {
         .books-hero { margin-top: 14px; border-radius: 14px; }
         .books-tools { grid-template-columns: 1fr; }
         .books-search-wrap { grid-column: auto; }
-        .books-grid { grid-template-columns: 1fr; }
+        .books-grid { grid-template-columns: minmax(0, 340px); }
         .book-cover-link { aspect-ratio: 4 / 5; }
         .book-title { min-height: 0; }
         .books-summary { align-items: flex-start; flex-direction: column; }
@@ -289,11 +318,20 @@
         <p>Choose a book, enter your name, email address and phone number, and your PDF will download immediately. No payment or shopping cart is required.</p>
     </section>
 
+    <section class="catalogue-heading" aria-labelledby="catalogue-heading">
+        <div>
+            <span class="catalogue-heading__eyebrow">Digital library</span>
+            <h2 id="catalogue-heading">Explore our books</h2>
+            <p>Discover books, guides and publications from the Awakening Saints library.</p>
+        </div>
+        <div class="catalogue-heading__count"><strong id="book-count">0</strong> book<span id="book-count-suffix">s</span> available</div>
+    </section>
+
     <section class="library-highlights" id="library-highlights" hidden aria-labelledby="library-highlights-title">
         <div class="library-highlights__head">
             <div>
-                <h2 id="library-highlights-title">Library highlights</h2>
-                <p>Reader favourites and newly added books, ready to explore.</p>
+                <h2 id="library-highlights-title">Popular books &amp; new arrivals</h2>
+                <p>Reader favourites and recently added titles, ready to explore.</p>
             </div>
         </div>
         <div class="featured-grid" id="featured-books-container"></div>
@@ -302,22 +340,21 @@
     <section class="books-tools" aria-label="Book filters">
         <div class="books-search-wrap">
             <i class="fas fa-search" aria-hidden="true"></i>
-            <input id="book-search" class="books-control" type="search" placeholder="Search by title or author" autocomplete="off">
+            <input id="book-search" class="books-control" type="search" placeholder="Search books, authors..." autocomplete="off">
         </div>
         <select id="topic-filter" class="books-control" aria-label="Filter by topic">
             <option value="">All topics</option>
         </select>
-        <select id="items-per-page" class="books-control" aria-label="Books per page">
-            <option value="8" selected>8 per page</option>
-            <option value="12">12 per page</option>
-            <option value="16">16 per page</option>
-            <option value="24">24 per page</option>
+        <select id="book-sort" class="books-control" aria-label="Sort books">
+            <option value="popular" selected>Sort: Most downloaded</option>
+            <option value="newest">Sort: Newest</option>
+            <option value="title">Sort: Title A–Z</option>
         </select>
     </section>
 
     <div class="books-summary">
-        <div><strong id="book-count">0</strong> book<span id="book-count-suffix">s</span> available</div>
-        <div>All downloadable titles are <strong>FREE</strong>.</div>
+        <div>Every available title is free to download.</div>
+        <div>Choose a book to learn more or begin your download.</div>
     </div>
 
     <section class="books-grid" id="books-container" aria-live="polite"></section>
@@ -343,12 +380,13 @@
     const pagination = document.getElementById('pagination');
     const search = document.getElementById('book-search');
     const topic = document.getElementById('topic-filter');
-    const perPage = document.getElementById('items-per-page');
+    const sort = document.getElementById('book-sort');
     const count = document.getElementById('book-count');
     const suffix = document.getElementById('book-count-suffix');
 
     let currentPage = 1;
     let filteredBooks = [...books];
+    const pageSize = 12;
 
     const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -361,6 +399,18 @@
         topic.appendChild(option);
     });
 
+    function sortBooks() {
+        const sortBy = sort.value;
+        filteredBooks.sort((first, second) => {
+            if (sortBy === 'popular') {
+                const downloadDifference = (Number(second.download_count) || 0) - (Number(first.download_count) || 0);
+                if (downloadDifference) return downloadDifference;
+            }
+            if (sortBy === 'title') return (first.title || '').localeCompare(second.title || '');
+            return new Date(second.created_at || 0) - new Date(first.created_at || 0);
+        });
+    }
+
     function applyFilters() {
         const term = search.value.trim().toLowerCase();
         const slug = topic.value;
@@ -369,8 +419,14 @@
             const haystack = `${book.title || ''} ${book.author || ''}`.toLowerCase();
             return matchesTopic && (!term || haystack.includes(term));
         });
+        sortBooks();
         currentPage = 1;
         render();
+    }
+
+    function formatDownloadCount(count) {
+        if (count >= 1000) return `${(count / 1000).toFixed(count >= 10000 ? 0 : 1).replace('.0', '')}K`;
+        return String(count);
     }
 
     function card(book) {
@@ -379,6 +435,10 @@
         const image = escapeHTML(book.image);
         const details = escapeHTML(book.details_url);
         const download = escapeHTML(book.download_url);
+        const downloads = Number.parseInt(book.download_count, 10) || 0;
+        const downloadLabel = downloads
+            ? `${formatDownloadCount(downloads)} download${downloads === 1 ? '' : 's'}`
+            : 'New to the library';
 
         const downloadAction = book.has_file
             ? `<a class="book-btn book-btn-primary" href="${download}"><i class="fas fa-download"></i> Download free</a>`
@@ -390,9 +450,12 @@
                     <img class="book-cover" src="${image}" alt="Cover of ${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackCover}'">
                 </a>
                 <div class="book-card__body">
-                    <span class="book-free-badge"><i class="fas fa-gift"></i> Free e-book</span>
-                    <h2 class="book-title">${title}</h2>
+                    <h2 class="book-title"><a href="${details}">${title}</a></h2>
                     <div class="book-author">by ${author}</div>
+                    <div class="book-meta">
+                        <span class="book-free-badge"><i class="fas fa-gift"></i> Free e-book</span>
+                        <span class="book-download-count"><i class="fas fa-download" aria-hidden="true"></i> ${downloadLabel}</span>
+                    </div>
                     <div class="book-actions">
                         <a class="book-btn book-btn-secondary" href="${details}">Details</a>
                         ${downloadAction}
@@ -423,7 +486,8 @@
             </article>`;
     }
 
-    if (featuredBooks.length) {
+    // Avoid showing a duplicate section when the entire library is only a few books.
+    if (featuredBooks.length && books.length > 3) {
         highlights.hidden = false;
         featuredContainer.innerHTML = featuredBooks.map(featuredCard).join('');
     }
@@ -460,7 +524,6 @@
     }
 
     function render() {
-        const pageSize = Number.parseInt(perPage.value, 10) || 8;
         const totalPages = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
         if (currentPage > totalPages) currentPage = totalPages;
 
@@ -481,8 +544,8 @@
 
     search.addEventListener('input', applyFilters);
     topic.addEventListener('change', applyFilters);
-    perPage.addEventListener('change', () => { currentPage = 1; render(); });
-    render();
+    sort.addEventListener('change', () => { sortBooks(); currentPage = 1; render(); });
+    applyFilters();
 })();
 </script>
 {% endblock %}

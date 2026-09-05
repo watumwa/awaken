@@ -68,6 +68,7 @@ class FreeBookDownloadTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Download this book free")
+        self.assertContains(response, "Book information")
 
     def test_contact_details_and_consent_are_required_before_download(self):
         url = reverse("sales:free_book_download", args=[self.product.product_slug])
@@ -179,7 +180,7 @@ class FreeBookDownloadTests(TestCase):
 
         response = self.client.get(reverse("sales:books"))
 
-        self.assertContains(response, "Library highlights")
+        self.assertContains(response, "Popular books &amp; new arrivals", html=False)
         self.assertContains(response, "featured-products-data")
 
     def test_book_detail_suggests_other_books_in_its_category(self):
