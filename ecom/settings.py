@@ -3,7 +3,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -78,29 +77,29 @@ UNFOLD = {
                     {
                         "title": "Books",
                         "icon": "menu_book",
-                        "link": reverse_lazy("admin:ecomapp_product_changelist"),
+                        "link": "/admin/ecomapp/product/",
                     },
                     {
                         "title": "Download activity",
                         "icon": "download",
-                        "link": reverse_lazy("admin:ecomapp_freebookdownload_changelist"),
+                        "link": "/admin/ecomapp/freebookdownload/",
                         "badge": "ecomapp.admin_dashboard.downloads_today_badge",
                         "badge_variant": "info",
                     },
                     {
                         "title": "Categories",
                         "icon": "category",
-                        "link": reverse_lazy("admin:ecomapp_category_changelist"),
+                        "link": "/admin/ecomapp/category/",
                     },
                     {
                         "title": "Book previews",
                         "icon": "preview",
-                        "link": reverse_lazy("admin:ecomapp_bookpreview_changelist"),
+                        "link": "/admin/ecomapp/bookpreview/",
                     },
                     {
                         "title": "Reader reviews",
                         "icon": "rate_review",
-                        "link": reverse_lazy("admin:ecomapp_bookreview_changelist"),
+                        "link": "/admin/ecomapp/bookreview/",
                     },
                 ],
             },
@@ -110,12 +109,12 @@ UNFOLD = {
                     {
                         "title": "Email subscribers",
                         "icon": "mark_email_read",
-                        "link": reverse_lazy("admin:ecomapp_emailsubscriber_changelist"),
+                        "link": "/admin/ecomapp/emailsubscriber/",
                     },
                     {
                         "title": "Subscriber messages",
                         "icon": "campaign",
-                        "link": reverse_lazy("admin:ecomapp_subscribermessage_changelist"),
+                        "link": "/admin/ecomapp/subscribermessage/",
                     },
                 ],
             },
@@ -125,12 +124,12 @@ UNFOLD = {
                     {
                         "title": "Book orders",
                         "icon": "receipt_long",
-                        "link": reverse_lazy("admin:ecomapp_bookorder_changelist"),
+                        "link": "/admin/ecomapp/bookorder/",
                     },
                     {
                         "title": "Payment logs",
                         "icon": "payments",
-                        "link": reverse_lazy("admin:ecomapp_paymentlog_changelist"),
+                        "link": "/admin/ecomapp/paymentlog/",
                     },
                 ],
             },
