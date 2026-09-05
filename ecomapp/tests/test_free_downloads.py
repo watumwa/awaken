@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
+from django.templatetags.static import static
 from django.urls import reverse
 
 from ecomapp.models import Category, FreeBookDownload, Product
@@ -49,6 +50,18 @@ class FreeBookDownloadTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "available to download free")
         self.assertContains(response, reverse("sales:free_book_download", args=[self.product.product_slug]))
+
+    def test_legacy_missing_cover_uses_the_library_placeholder(self):
+        self.product.product_image.name = "product_images/p2.jpg"
+
+        self.assertFalse(self.product.has_usable_cover)
+        self.assertEqual(
+            self.product.get_cover_url(),
+            static("assets/images/book-cover-placeholder.svg"),
+        )
+
+        response = self.client.get(reverse("sales:books"))
+        self.assertContains(response, "book-cover-placeholder.svg")
 
     def test_out_of_stock_digital_book_still_has_details_page(self):
         response = self.client.get(self.product.get_absolute_url())

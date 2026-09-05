@@ -1,4 +1,5 @@
 {% extends 'bookbase.html' %}
+{% load static %}
 
 {% block title %}Download {{ product.title }} Free | Awakening Saints{% endblock %}
 
@@ -161,7 +162,7 @@
 <div class="book-page-wrap">
     <section class="download-layout" aria-labelledby="download-heading">
         <aside class="download-book-panel">
-            <img src="{{ product.get_cover_url }}" alt="Cover of {{ product.title }}">
+            <img src="{{ product.get_cover_url }}" alt="Cover of {{ product.title }}" onerror="this.onerror=null;this.src='{% static 'assets/images/book-cover-placeholder.svg' %}'">
             <span class="download-badge"><i class="fas fa-gift"></i> Free e-book</span>
             <h1>{{ product.title }}</h1>
             <p>by {{ product.author }}</p>

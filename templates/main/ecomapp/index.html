@@ -291,6 +291,7 @@
 (() => {
     const categories = JSON.parse(document.getElementById('categories-data').textContent || '[]');
     const books = JSON.parse(document.getElementById('products-data').textContent || '[]');
+    const fallbackCover = "{% static 'assets/images/book-cover-placeholder.svg' %}";
 
     const container = document.getElementById('books-container');
     const pagination = document.getElementById('pagination');
@@ -340,7 +341,7 @@
         return `
             <article class="book-card">
                 <a class="book-cover-link" href="${details}" aria-label="View ${title}">
-                    <img class="book-cover" src="${image}" alt="Cover of ${title}" loading="lazy">
+                    <img class="book-cover" src="${image}" alt="Cover of ${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackCover}'">
                 </a>
                 <div class="book-card__body">
                     <span class="book-free-badge"><i class="fas fa-gift"></i> Free e-book</span>

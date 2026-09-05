@@ -35,3 +35,19 @@ class ProductAdminTests(TestCase):
         )
 
         self.assertEqual(product.created_by, self.admin_user)
+
+    def test_admin_renders_the_missing_cover_status_without_an_html_error(self):
+        product = Product(
+            category=self.category,
+            created_by=self.admin_user,
+            title="Legacy Cover",
+            author="Test Author",
+            product_slug="legacy-cover",
+            product_price=Decimal("10.00"),
+            qty_in_stock=1,
+        )
+        product.product_image.name = "product_images/p2.jpg"
+        product_admin = ProductAdmin(Product, AdminSite())
+
+        self.assertIn("Upload a cover", product_admin.product_image_display(product))
+        self.assertIn("Missing", product_admin.book_file_status(product))

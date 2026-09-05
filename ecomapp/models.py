@@ -38,6 +38,11 @@ class Category(models.Model):
 # PRODUCT
 # =========================
 class Product(models.Model):
+    # ``p2.jpg`` was the old database default. The file was never present in
+    # the media library, so rows created before migration 0008 can otherwise
+    # render a broken image on the public book cards.
+    LEGACY_MISSING_COVER_NAMES = {"product_images/p2.jpg"}
+
     category = models.ForeignKey(
         Category, related_name="product", on_delete=models.CASCADE
     )
@@ -85,10 +90,23 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse("sales:product_detail", args=[self.product_slug])
 
+    @property
+    def has_usable_cover(self):
+        """Whether this product has a real cover rather than the old default."""
+        return bool(
+            self.product_image
+            and self.product_image.name not in self.LEGACY_MISSING_COVER_NAMES
+        )
+
     def get_cover_url(self):
-        if self.product_image:
-            return self.product_image.url
-        return static("assets/images/logo.png")
+        """Return a safe, polished cover URL for every public book view."""
+        if self.has_usable_cover:
+            try:
+                return self.product_image.url
+            except (ValueError, OSError):
+                # A malformed legacy value should never break a public page.
+                pass
+        return static("assets/images/book-cover-placeholder.svg")
 
     def __str__(self):
         return self.title

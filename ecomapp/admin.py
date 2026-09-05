@@ -71,37 +71,47 @@ class ProductAdmin(ModelAdmin):
     @admin.display(description="PDF / file")
     def book_file_status(self, obj):
         if obj.book_file:
-            return format_html('<span style="color:#137333;font-weight:700;">Ready</span>')
-        return format_html('<span style="color:#b3261e;font-weight:700;">Missing</span>')
+            return format_html(
+                '<span style="color:#137333;font-weight:700;">{}</span>', "Ready"
+            )
+        return format_html(
+            '<span style="color:#b3261e;font-weight:700;">{}</span>', "Missing"
+        )
 
     @admin.display(description="Cover")
     def product_image_display(self, obj):
-        if obj.product_image:
-            try:
-                return format_html(
-                    '<img src="{}" height="58" width="44" '
-                    'style="border-radius:4px;object-fit:cover;" alt="Cover of {}"/>',
-                    obj.product_image.url,
-                    obj.title,
-                )
-            except (ValueError, OSError):
-                pass
-        return "-"
+        image_url = obj.get_cover_url()
+        label = "Cover needs upload" if not obj.has_usable_cover else f"Cover of {obj.title}"
+        return format_html(
+            '<img src="{}" height="58" width="44" '
+            'style="border-radius:4px;object-fit:cover;vertical-align:middle;" alt="{}"/>'
+            '{}',
+            image_url,
+            label,
+            format_html(
+                '<span style="margin-left:8px;color:#b45309;font-weight:700;font-size:12px;">'
+                '{}</span>',
+                "Upload a cover",
+            )
+            if not obj.has_usable_cover
+            else "",
+        )
 
     @admin.display(description="Cover preview")
     def cover_preview(self, obj):
-        if not obj or not obj.product_image:
-            return "Upload a cover image to display it across the library."
-        try:
-            return format_html(
-                '<img src="{}" style="width:180px;max-height:260px;object-fit:cover;'
-                'border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.18);" '
-                'alt="Cover of {}"/>',
-                obj.product_image.url,
-                obj.title,
-            )
-        except (ValueError, OSError):
-            return "The cover image is not currently available."
+        if not obj:
+            return "Save the book, then upload its cover image."
+        note = "Upload the book's real cover to replace this library placeholder." if not obj.has_usable_cover else ""
+        return format_html(
+            '<img src="{}" style="width:180px;max-height:260px;object-fit:cover;'
+            'border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.18);" '
+            'alt="Cover of {}"/>{}',
+            obj.get_cover_url(),
+            obj.title,
+            format_html('<p style="margin-top:8px;color:#9a6700;font-weight:600;">{}</p>', note)
+            if note
+            else "",
+        )
 
     readonly_fields = ("cover_preview",)
 
@@ -153,17 +163,12 @@ class FreeBookDownloadAdmin(ModelAdmin):
 
     @admin.display(description="Cover")
     def book_cover(self, obj):
-        if not obj.product.product_image:
-            return "-"
-        try:
-            return format_html(
-                '<img src="{}" height="44" width="33" '
-                'style="border-radius:4px;object-fit:cover;" alt="Cover of {}"/>',
-                obj.product.product_image.url,
-                obj.product.title,
-            )
-        except (ValueError, OSError):
-            return "-"
+        return format_html(
+            '<img src="{}" height="44" width="33" '
+            'style="border-radius:4px;object-fit:cover;" alt="Cover of {}"/>',
+            obj.product.get_cover_url(),
+            obj.product.title,
+        )
 
     def has_add_permission(self, request):
         return False

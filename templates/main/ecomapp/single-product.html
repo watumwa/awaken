@@ -1,4 +1,5 @@
 {% extends 'bookbase.html' %}
+{% load static %}
 
 {% block title %}{{ product.title }} | Awakening Saints{% endblock %}
 
@@ -95,7 +96,7 @@
 
     <section class="detail-card">
         <div>
-            <img class="detail-cover" src="{{ product.get_cover_url }}" alt="Cover of {{ product.title }}">
+            <img class="detail-cover" src="{{ product.get_cover_url }}" alt="Cover of {{ product.title }}" onerror="this.onerror=null;this.src='{% static 'assets/images/book-cover-placeholder.svg' %}'">
         </div>
         <div class="detail-info">
             <span class="detail-badge"><i class="fas fa-gift"></i> Free download</span>
