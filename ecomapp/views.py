@@ -91,7 +91,18 @@ def _remember_download(request, download):
 
 
 def indexone(request):
-    return render(request, "site/index.html")
+    featured_books = (
+        Product.products.select_related("category")
+        .annotate(download_count=Count("free_downloads"))
+        .filter(book_file__isnull=False)
+        .exclude(book_file="")
+        .order_by("-download_count", "-created")[:8]
+    )
+    return render(
+        request,
+        "site/index.html",
+        {"featured_books": featured_books},
+    )
 
 
 def about(request):

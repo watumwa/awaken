@@ -282,6 +282,29 @@ class FreeBookDownloadTests(TestCase):
         self.assertContains(response, "Popular books &amp; new arrivals", html=False)
         self.assertContains(response, "featured-products-data")
 
+    def test_homepage_displays_downloadable_books_without_searching(self):
+        unavailable_book = Product.objects.create(
+            category=self.product.category,
+            created_by=self.creator,
+            title="Coming Later",
+            author="Awakening Saints",
+            product_slug="coming-later",
+            product_price=Decimal("0.00"),
+            qty_in_stock=0,
+        )
+
+        response = self.client.get(reverse("sales:homeone"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "See a book you love? Start reading.")
+        self.assertContains(response, self.product.title)
+        self.assertContains(response, self.product.get_cover_url())
+        self.assertContains(
+            response,
+            reverse("sales:free_book_download", args=[self.product.product_slug]),
+        )
+        self.assertNotContains(response, unavailable_book.title)
+
     def test_book_detail_suggests_other_books_in_its_category(self):
         related_book = Product.objects.create(
             category=self.product.category,
