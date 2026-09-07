@@ -228,6 +228,73 @@
     }
     .home-book { flex: 0 0 min(78vw, 285px); scroll-snap-align: start; }
   }
+
+  /* Service times: pill/chip row instead of a plain bullet list. */
+  .service-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+  }
+  .service-times li {
+    padding: 6px 14px;
+    color: #102a43;
+    background: #f0f4f8;
+    border: 1px solid #e1eaf1;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* "What we do" checklist: two-column grid instead of a tall vertical list. */
+  .ministry-checklist {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 18px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ministry-checklist li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #243b53;
+    font-size: 0.95rem;
+  }
+  .ministry-checklist li .fa-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: #0879bd;
+    background: #eaf4fc;
+    border-radius: 50%;
+    font-size: 0.7rem;
+  }
+
+  @media (max-width: 575px) {
+    .ministry-checklist { grid-template-columns: 1fr; }
+  }
+
+  /* "Our Ministries" cards: give them real card structure and a hover lift. */
+  .grdhny-info {
+    height: 100%;
+    padding: 32px;
+    background: #fff;
+    border: 1px solid #e7edf3;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(16, 42, 67, 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .grdhny-info:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(16, 42, 67, 0.1);
+  }
 </style>
 {% endblock %}
 
@@ -371,27 +438,27 @@
           </p>
 
           <h6 class="sub-title">Monday - Saturday</h6>
-          <ul class="cont-4">
-            <li><span class="fa fa-check"></span> 12:00 pm - 2:30 pm</li>
-            <li><span class="fa fa-check"></span> 3:30 pm - 5:00 pm</li>
-            <li><span class="fa fa-check"></span> 5:00 pm - 8:00 pm</li>
+          <ul class="cont-4 service-times">
+            <li>12:00 pm - 2:30 pm</li>
+            <li>3:30 pm - 5:00 pm</li>
+            <li>5:00 pm - 8:00 pm</li>
           </ul>
 
           <h6 class="sub-title">Sunday</h6>
-          <ul class="cont-4">
-            <li><span class="fa fa-check"></span> 8:00 am - 10:00 am</li>
-            <li><span class="fa fa-check"></span> 10:00 am - 1:00 pm</li>
+          <ul class="cont-4 service-times">
+            <li>8:00 am - 10:00 am</li>
+            <li>10:00 am - 1:00 pm</li>
           </ul>
         </div>
         <div class="cwp4-text col-lg-6">
           <h6 class="sub-title">What We Do</h6>
           <h3 class="hny-title">Our Ministry</h3>
           <p>
-            We are dedicated to serving our community through various ministries, 
+            We are dedicated to serving our community through various ministries,
             offering spiritual guidance, fellowship, and outreach programs. Our goal is to create a space for growth in faith and connection with others.
           </p>
 
-          <ul class="cont-4">
+          <ul class="cont-4 ministry-checklist">
             <li><span class="fa fa-check"></span> Worship Services for All Ages</li>
             <li><span class="fa fa-check"></span> Bible Study Groups</li>
             <li><span class="fa fa-check"></span> Community Outreach Programs</li>
