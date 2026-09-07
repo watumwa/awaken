@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Support This Ministry | Awakening Saints</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            color: #162535;
+            background: #f7f3eb;
+            font-family: "Arial", "Helvetica", sans-serif;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            position: relative;
+            width: 210mm;
+            height: 297mm;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 91% 4%, rgba(203, 151, 61, .24) 0, rgba(203, 151, 61, 0) 27%),
+                linear-gradient(180deg, #fffdf9 0%, #f6f1e8 100%);
+        }
+
+        .top-band {
+            position: absolute;
+            inset: 0 0 auto;
+            height: 7mm;
+            background: #132a3b;
+        }
+
+        .side-accent {
+            position: absolute;
+            inset: 7mm auto 0 0;
+            width: 2.2mm;
+            background: linear-gradient(180deg, #d2a34b 0%, #a8751d 100%);
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 20mm 19mm 14mm 22mm;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 4mm;
+            margin-bottom: 15mm;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 13mm;
+            height: 13mm;
+            color: #fff;
+            background: #132a3b;
+            border: 1.2mm solid #d2a34b;
+            border-radius: 50%;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 15pt;
+            font-weight: 700;
+            letter-spacing: -.5pt;
+        }
+
+        .brand-name {
+            color: #132a3b;
+            font-size: 10.5pt;
+            font-weight: 800;
+            letter-spacing: 2.2pt;
+        }
+
+        .brand-subtitle {
+            margin-top: 1.2mm;
+            color: #8a6a32;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 1.45pt;
+            text-transform: uppercase;
+        }
+
+        .eyebrow {
+            margin: 0 0 3.5mm;
+            color: #a8751d;
+            font-size: 8pt;
+            font-weight: 800;
+            letter-spacing: 1.8pt;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 150mm;
+            margin: 0;
+            color: #132a3b;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 30pt;
+            font-weight: 700;
+            line-height: 1.08;
+            letter-spacing: -.7pt;
+        }
+
+        .title-rule {
+            width: 22mm;
+            height: 1.2mm;
+            margin: 6mm 0 7mm;
+            background: #d2a34b;
+        }
+
+        .story {
+            max-width: 160mm;
+            margin: 0;
+            color: #405160;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 11.2pt;
+            line-height: 1.55;
+        }
+
+        .story + .story {
+            margin-top: 4mm;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1.18fr .82fr;
+            gap: 5mm;
+            margin-top: 10mm;
+        }
+
+        .card {
+            min-height: 63mm;
+            padding: 7mm;
+            background: rgba(255, 255, 255, .82);
+            border: .35mm solid #ddd3c2;
+            border-radius: 3.5mm;
+            box-shadow: 0 2.2mm 7mm rgba(19, 42, 59, .07);
+        }
+
+        .card-kicker {
+            margin: 0 0 2.3mm;
+            color: #a8751d;
+            font-size: 7.3pt;
+            font-weight: 800;
+            letter-spacing: 1.45pt;
+            text-transform: uppercase;
+        }
+
+        .card h2 {
+            margin: 0 0 5mm;
+            color: #132a3b;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 16.5pt;
+            line-height: 1.15;
+        }
+
+        .bank-row {
+            display: grid;
+            grid-template-columns: 29mm 1fr;
+            gap: 3mm;
+            padding: 2.1mm 0;
+            border-top: .25mm solid #ebe4d8;
+            font-size: 9.2pt;
+            line-height: 1.25;
+        }
+
+        .bank-row:first-of-type {
+            border-top: 0;
+        }
+
+        .bank-label {
+            color: #73808a;
+        }
+
+        .bank-value {
+            color: #182b3a;
+            font-weight: 700;
+        }
+
+        .contact-card {
+            color: #fff;
+            background: #132a3b;
+            border-color: #132a3b;
+        }
+
+        .contact-card .card-kicker {
+            color: #e5bd70;
+        }
+
+        .contact-card h2 {
+            margin-bottom: 4mm;
+            color: #fff;
+        }
+
+        .contact-name {
+            margin: 0 0 4mm;
+            color: #fff;
+            font-size: 10.5pt;
+            font-weight: 800;
+        }
+
+        .contact-item {
+            display: block;
+            margin-top: 2.8mm;
+            color: #d9e1e6;
+            font-size: 8.8pt;
+            line-height: 1.35;
+        }
+
+        .contact-label {
+            display: block;
+            margin-bottom: .6mm;
+            color: #e5bd70;
+            font-size: 6.5pt;
+            font-weight: 800;
+            letter-spacing: 1pt;
+            text-transform: uppercase;
+        }
+
+        .closing {
+            display: grid;
+            grid-template-columns: 1fr 36mm;
+            gap: 8mm;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 9mm;
+        }
+
+        .thanks {
+            margin: 0 0 4mm;
+            color: #132a3b;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 15pt;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .scripture {
+            margin: 0;
+            color: #7b6a50;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 9.2pt;
+            font-style: italic;
+        }
+
+        .qr-wrap {
+            text-align: center;
+        }
+
+        .qr-code {
+            display: grid;
+            place-items: center;
+            width: 31mm;
+            height: 31mm;
+            margin: 0 auto 2.2mm;
+            padding: 2mm;
+            background: #fff;
+            border: .4mm solid #d8c59e;
+            border-radius: 2mm;
+        }
+
+        .qr-code svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .qr-caption {
+            color: #485866;
+            font-size: 6.7pt;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 9mm;
+            padding-top: 4mm;
+            border-top: .35mm solid #d9c9aa;
+            color: #6d746f;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: .65pt;
+            text-transform: uppercase;
+        }
+
+        .footer-marker {
+            color: transparent;
+            font-size: .1pt;
+            letter-spacing: 0;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <div class="top-band"></div>
+        <div class="side-accent"></div>
+
+        <div class="content">
+            <header class="brand">
+                <div class="brand-mark" aria-hidden="true">AS</div>
+                <div>
+                    <div class="brand-name">AWAKENING SAINTS</div>
+                    <div class="brand-subtitle">Gospel resources for every reader</div>
+                </div>
+            </header>
+
+            <section aria-labelledby="support-title">
+                <p class="eyebrow">A personal note from the author</p>
+                <h1 id="support-title">Support This Ministry</h1>
+                <div class="title-rule"></div>
+
+                <p class="story">There was a time when I longed to access certain books and messages but could not afford them. Because of that experience, I have chosen to make these materials available free of charge so that the Gospel may reach everyone, regardless of their financial circumstances.</p>
+                <p class="story">If this book has blessed you and you feel led by the Holy Spirit to support this ministry, your voluntary gift will help make more Gospel materials available to others.</p>
+            </section>
+
+            <section class="details-grid" aria-label="Support and contact details">
+                <div class="card">
+                    <p class="card-kicker">Voluntary giving</p>
+                    <h2>Bank transfer</h2>
+                    <div class="bank-row">
+                        <span class="bank-label">Bank</span>
+                        <span class="bank-value">Equity Bank Uganda</span>
+                    </div>
+                    <div class="bank-row">
+                        <span class="bank-label">Account name</span>
+                        <span class="bank-value">Kalungi Denis</span>
+                    </div>
+                    <div class="bank-row">
+                        <span class="bank-label">Account number</span>
+                        <span class="bank-value">1047103540341</span>
+                    </div>
+                    <div class="bank-row">
+                        <span class="bank-label">SWIFT code</span>
+                        <span class="bank-value">EQBLUGKA</span>
+                    </div>
+                </div>
+
+                <div class="card contact-card">
+                    <p class="card-kicker">Prayer · Questions · Clarification</p>
+                    <h2>Reach out</h2>
+                    <p class="contact-name">Pr. Denis Kalungi</p>
+                    <a class="contact-item" href="https://wa.me/256706344822">
+                        <span class="contact-label">Phone / WhatsApp</span>
+                        +256 706 344822
+                    </a>
+                    <a class="contact-item" href="mailto:kalungidenis2@gmail.com">
+                        <span class="contact-label">Email</span>
+                        kalungidenis2@gmail.com
+                    </a>
+                    <a class="contact-item" href="https://awakeningsaints.org">
+                        <span class="contact-label">Website</span>
+                        awakeningsaints.org
+                    </a>
+                </div>
+            </section>
+
+            <section class="closing" aria-label="Thank you and WhatsApp QR code">
+                <div>
+                    <p class="thanks">Thank you for helping us share the Gospel freely with others.</p>
+                    <p class="scripture">“Freely you have received; freely give.” — Matthew 10:8</p>
+                </div>
+                <div class="qr-wrap">
+                    <a class="qr-code" href="https://wa.me/256706344822?text=Hello%20Pastor%20Denis%2C%20I%20read%20one%20of%20your%20books%20and%20would%20like%20to%20connect." aria-label="Open WhatsApp conversation with Pastor Denis Kalungi">
+                        {{QR_SVG}}
+                    </a>
+                    <div class="qr-caption">Scan to connect<br>on WhatsApp</div>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <span>Awakening Saints</span>
+                <span>Free Gospel Library</span>
+                <span class="footer-marker">AWAKENING-SAINTS-SUPPORT-PAGE-V1</span>
+            </footer>
+        </div>
+    </main>
+</body>
+</html>

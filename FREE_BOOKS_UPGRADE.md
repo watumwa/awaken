@@ -74,6 +74,28 @@ In Django Admin:
 
 The public site will automatically show **Download free** when a `book_file` is present.
 
+## Add the support page to book PDFs
+
+The published PDFs include a branded final page with voluntary-giving details,
+ministry contact information, clickable links and a WhatsApp QR code. After adding
+a new book or replacing a PDF with a revised edition, run:
+
+```bash
+python scripts/append_book_support_page.py media/books/your-book.pdf
+```
+
+Run the command without a PDF path to process every title listed in the publishing
+script. It safely skips books that already contain the current support page. To
+render a one-page proof without changing any book, use:
+
+```bash
+python scripts/append_book_support_page.py --render-only /tmp/support-page.pdf
+```
+
+The publishing command requires Google Chrome and Poppler's `pdfinfo`, `pdftotext`
+and `pdfunite` utilities. The Python QR-code dependency is included in
+`requirements.txt`.
+
 ## Downloader contact report
 
 Open **Django Admin → Free book downloads**. You can search by name, email, phone or book title, filter by book/date/marketing consent, and use the action **Export selected downloader contacts to CSV**.
