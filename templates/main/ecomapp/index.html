@@ -444,8 +444,7 @@
             </a>`;
     }
 
-    // Avoid showing a duplicate section when the entire library is only a few books.
-    if (featuredBooks.length && books.length > 3) {
+    if (featuredBooks.length) {
         highlights.hidden = false;
         featuredContainer.innerHTML = featuredBooks.map(featuredCard).join('');
         $(featuredContainer).owlCarousel({
