@@ -38,7 +38,16 @@
     .library-highlights__head h2 { margin: 0; color: #102a43; font-size: 1.35rem; }
     .library-highlights__head p { margin: 4px 0 0; color: #627d98; font-size: .92rem; }
 
-    .featured-carousel { overflow: hidden; border-radius: 16px; box-shadow: 0 14px 34px rgba(16,42,67,.14); }
+    .featured-carousel {
+        position: relative;
+        width: 100%;
+        max-width: 460px;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 16px;
+        box-shadow: 0 14px 34px rgba(16,42,67,.16);
+        cursor: pointer;
+    }
     .featured-carousel .owl-stage-outer { border-radius: 16px; }
     .featured-card {
         display: block;
@@ -49,8 +58,13 @@
     .featured-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .featured-carousel .owl-nav,
     .featured-carousel .owl-nav.disabled { display: none; }
-    .featured-carousel .owl-dots { position: absolute; right: 16px; bottom: 14px; z-index: 2; }
-    .featured-carousel { position: relative; }
+    .featured-carousel .owl-dots {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 14px;
+        z-index: 2;
+    }
     .featured-carousel .owl-dots .owl-dot span {
         width: 8px;
         height: 8px;
@@ -422,10 +436,10 @@
         const title = escapeHTML(book.title);
         const author = escapeHTML(book.author || 'Awakening Saints');
         const image = escapeHTML(book.image);
-        const details = escapeHTML(book.details_url);
+        const download = escapeHTML(book.download_url);
 
         return `
-            <a class="featured-card" href="${details}" aria-label="View ${title} by ${author}">
+            <a class="featured-card" href="${download}" aria-label="Download ${title} by ${author}">
                 <img src="${image}" alt="Cover of ${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackCover}'">
             </a>`;
     }
@@ -435,19 +449,14 @@
         highlights.hidden = false;
         featuredContainer.innerHTML = featuredBooks.map(featuredCard).join('');
         $(featuredContainer).owlCarousel({
-            items: 3,
+            items: 1,
             loop: featuredBooks.length > 1,
             margin: 0,
             nav: false,
             dots: true,
             autoplay: true,
             autoplayTimeout: 3500,
-            autoplayHoverPause: true,
-            responsive: {
-                0: { items: 1 },
-                576: { items: 2 },
-                992: { items: 3 }
-            }
+            autoplayHoverPause: true
         });
     }
 
