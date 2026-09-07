@@ -51,10 +51,15 @@
         /* Keep the fixed header above all page content. */
         #site-header { z-index: 1040; }
 
-        .site-main { padding-top: 86px; }
+        /*
+         * Most page sections (hero banners, breadcrumb headers) already carry
+         * their own margin-top to clear the fixed navbar. The book pages don't,
+         * so they opt into this instead of double-offsetting everyone else.
+         */
+        .book-page-main { padding-top: 86px; }
 
         @media (max-width: 767px) {
-            .site-main { padding-top: 76px; }
+            .book-page-main { padding-top: 76px; }
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -66,7 +71,7 @@
 
     {% include 'navbar.html' %}
 
-    <main class="site-main">
+    <main class="{% block main_class %}{% endblock %}">
         {% block content %}{% endblock %}
     </main>
 
