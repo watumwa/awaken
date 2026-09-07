@@ -6,54 +6,12 @@
 
 {% block extra_css %}
 <style>
-    .books-hero {
-        margin: 24px auto 26px;
-        padding: clamp(30px, 5vw, 54px);
-        border-radius: 20px;
-        color: #fff;
-        background:
-            radial-gradient(circle at 85% 15%, rgba(255,255,255,.17), transparent 26%),
-            linear-gradient(120deg, #102a43 0%, #146da8 55%, #1098e8 100%);
-        box-shadow: 0 18px 45px rgba(16, 42, 67, .16);
-    }
-
-    .books-hero__eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 12px;
-        padding: 6px 11px;
-        border: 1px solid rgba(255,255,255,.28);
-        border-radius: 999px;
-        background: rgba(255,255,255,.10);
-        font-size: .8rem;
-        font-weight: 800;
-        letter-spacing: .05em;
-        text-transform: uppercase;
-    }
-
-    .books-hero h1 {
-        max-width: 760px;
-        margin: 0 0 12px;
-        color: #fff;
-        font-size: clamp(2rem, 5vw, 3.4rem);
-        line-height: 1.08;
-    }
-
-    .books-hero p {
-        max-width: 760px;
-        margin: 0;
-        color: rgba(255,255,255,.88);
-        font-size: 1.05rem;
-        line-height: 1.65;
-    }
-
     .catalogue-heading {
         display: flex;
         align-items: end;
         justify-content: space-between;
         gap: 24px;
-        margin: 0 2px 18px;
+        margin: 24px 2px 18px;
     }
     .catalogue-heading__eyebrow {
         display: block;
@@ -79,26 +37,28 @@
     }
     .library-highlights__head h2 { margin: 0; color: #102a43; font-size: 1.35rem; }
     .library-highlights__head p { margin: 4px 0 0; color: #627d98; font-size: .92rem; }
-    .featured-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+    .featured-carousel { overflow: hidden; border-radius: 16px; box-shadow: 0 14px 34px rgba(16,42,67,.14); }
+    .featured-carousel .owl-stage-outer { border-radius: 16px; }
     .featured-card {
-        display: grid;
-        grid-template-columns: 92px minmax(0, 1fr);
-        gap: 14px;
-        min-width: 0;
-        padding: 14px;
-        color: #fff;
-        background: linear-gradient(145deg, #102a43, #146da8);
-        border-radius: 14px;
-        box-shadow: 0 12px 25px rgba(16,42,67,.13);
+        display: block;
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+        background: #edf2f7;
     }
-    .featured-card__cover { display: block; overflow: hidden; border-radius: 9px; box-shadow: 0 6px 15px rgba(0,0,0,.2); }
-    .featured-card__cover img { display: block; width: 100%; height: 128px; object-fit: cover; }
-    .featured-card__body { display: flex; flex-direction: column; min-width: 0; }
-    .featured-card__eyebrow { color: #dff6e8; font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-    .featured-card h3 { margin: 5px 0 4px; overflow: hidden; color: #fff; font-size: 1rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-    .featured-card__author { margin: 0; overflow: hidden; color: rgba(255,255,255,.78); font-size: .86rem; text-overflow: ellipsis; white-space: nowrap; }
-    .featured-card__link { display: inline-flex; align-items: center; gap: 5px; margin-top: auto; color: #fff; font-size: .84rem; font-weight: 800; text-decoration: none; }
-    .featured-card__link:hover { color: #dff6e8; }
+    .featured-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .featured-carousel .owl-nav,
+    .featured-carousel .owl-nav.disabled { display: none; }
+    .featured-carousel .owl-dots { position: absolute; right: 16px; bottom: 14px; z-index: 2; }
+    .featured-carousel { position: relative; }
+    .featured-carousel .owl-dots .owl-dot span {
+        width: 8px;
+        height: 8px;
+        margin: 0 3px;
+        background: rgba(255,255,255,.55);
+        border-radius: 50%;
+    }
+    .featured-carousel .owl-dots .owl-dot.active span { background: #fff; }
 
     .books-tools {
         display: grid;
@@ -294,13 +254,11 @@
         .books-tools { grid-template-columns: 1fr 1fr; }
         .books-search-wrap { grid-column: 1 / -1; }
         .books-grid { grid-template-columns: repeat(2, minmax(0, 270px)); gap: 16px; }
-        .featured-grid { grid-template-columns: 1fr; }
         .catalogue-heading { align-items: flex-start; flex-direction: column; gap: 10px; }
         .catalogue-heading__count { text-align: left; }
     }
 
     @media (max-width: 520px) {
-        .books-hero { margin-top: 14px; border-radius: 14px; }
         .books-tools { grid-template-columns: 1fr; }
         .books-search-wrap { grid-column: auto; }
         .books-grid { grid-template-columns: minmax(0, 340px); }
@@ -313,12 +271,6 @@
 
 {% block content %}
 <div class="book-page-wrap">
-    <section class="books-hero">
-        <div class="books-hero__eyebrow"><i class="fas fa-book-open"></i> Awakening Saints Library</div>
-        <h1>Christian books, available to download free.</h1>
-        <p>Choose a book, enter your name, email address and phone number, and your PDF will download immediately. No payment or shopping cart is required.</p>
-    </section>
-
     <section class="catalogue-heading" aria-labelledby="catalogue-heading">
         <div>
             <span class="catalogue-heading__eyebrow">Digital library</span>
@@ -335,7 +287,7 @@
                 <p>Reader favourites and recently added titles, ready to explore.</p>
             </div>
         </div>
-        <div class="featured-grid" id="featured-books-container"></div>
+        <div class="featured-carousel owl-carousel owl-theme" id="featured-books-container"></div>
     </section>
 
     <section class="books-tools" aria-label="Book filters">
@@ -368,6 +320,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'assets/js/owl.carousel.js' %}"></script>
 <script>
 (() => {
     const categories = JSON.parse(document.getElementById('categories-data').textContent || '[]');
@@ -470,27 +423,32 @@
         const author = escapeHTML(book.author || 'Awakening Saints');
         const image = escapeHTML(book.image);
         const details = escapeHTML(book.details_url);
-        const downloads = Number.parseInt(book.download_count, 10) || 0;
-        const label = downloads ? `${downloads} reader${downloads === 1 ? '' : 's'} downloaded this` : 'New library pick';
 
         return `
-            <article class="featured-card">
-                <a class="featured-card__cover" href="${details}" aria-label="View ${title}">
-                    <img src="${image}" alt="Cover of ${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackCover}'">
-                </a>
-                <div class="featured-card__body">
-                    <span class="featured-card__eyebrow">${escapeHTML(label)}</span>
-                    <h3>${title}</h3>
-                    <p class="featured-card__author">by ${author}</p>
-                    <a class="featured-card__link" href="${details}">Explore book <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-                </div>
-            </article>`;
+            <a class="featured-card" href="${details}" aria-label="View ${title} by ${author}">
+                <img src="${image}" alt="Cover of ${title}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackCover}'">
+            </a>`;
     }
 
     // Avoid showing a duplicate section when the entire library is only a few books.
     if (featuredBooks.length && books.length > 3) {
         highlights.hidden = false;
         featuredContainer.innerHTML = featuredBooks.map(featuredCard).join('');
+        $(featuredContainer).owlCarousel({
+            items: 3,
+            loop: featuredBooks.length > 1,
+            margin: 0,
+            nav: false,
+            dots: true,
+            autoplay: true,
+            autoplayTimeout: 3500,
+            autoplayHoverPause: true,
+            responsive: {
+                0: { items: 1 },
+                576: { items: 2 },
+                992: { items: 3 }
+            }
+        });
     }
 
     function renderPagination(totalPages) {

@@ -268,7 +268,7 @@ def index(request, cat_slug=None):
         serialize_product(product)
         for product in products.filter(book_file__isnull=False)
         .exclude(book_file="")
-        .order_by("-download_count", "-created")[:3]
+        .order_by("-download_count", "-created")[:8]
     ]
 
     categories = Category.objects.order_by("cat_name")
