@@ -1,20 +1,48 @@
 {% extends 'base.html' %} {% load static %} {% block title %}Checkout | Awakening Saints{% endblock %} {% block content %}
 
 <style>
+    [x-cloak] { display: none !important; }
+
+    #checkout-component .bg-light {
+        background: #fff !important;
+        border: 1px solid var(--slate-100);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+    }
+    #checkout-component h4 { color: var(--navy-900); font-weight: 800; }
+
+    #checkout-component .form-control {
+        min-height: 46px;
+        padding: 10px 16px;
+        border: 1px solid var(--slate-300);
+        border-radius: var(--radius-sm);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    #checkout-component .form-control:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(16, 152, 232, 0.14);
+        outline: none;
+    }
+    #checkout-component .form-control.is-invalid {
+        border-color: #d64545;
+    }
+    #checkout-component .form-label { font-weight: 600; color: var(--navy-800); }
+
     .order-summary {
-        background: #f8f9fa;
-        border-radius: 8px;
+        background: #fff;
+        border: 1px solid var(--slate-100);
+        border-radius: var(--radius-lg);
         padding: 25px;
         margin-top: 20px;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-sm);
     }
 
     .summary-title {
-        font-weight: 600;
+        font-weight: 800;
         font-size: 1.2rem;
         margin-bottom: 20px;
-        color: var(--dark);
-        border-bottom: 2px solid var(--border);
+        color: var(--navy-900);
+        border-bottom: 2px solid var(--slate-100);
         padding-bottom: 10px;
     }
 
@@ -22,8 +50,17 @@
         display: flex;
         justify-content: space-between;
         padding: 8px 0;
-        border-bottom: 1px dashed var(--border);
+        color: var(--navy-800);
+        border-bottom: 1px dashed var(--slate-200);
     }
+
+    .order-summary .btn {
+        border-radius: var(--radius-sm);
+        font-weight: 700;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+    .order-summary .btn:hover { transform: translateY(-1px); }
+    .order-summary .btn:disabled { transform: none; opacity: 0.75; }
 </style>
 
 <!-- Start Banner Area -->
@@ -38,7 +75,7 @@
                     <a href="{% url 'sales:books' %}"
                         >Home<span class="lnr lnr-arrow-right"></span
                     ></a>
-                    <a href="single-product.html">Checkout</a>
+                    <span>Checkout</span>
                 </nav>
             </div>
         </div>
@@ -55,6 +92,7 @@
                     class="row"
                     x-data="checkoutForm(JSON.parse('{{ cart_json|escapejs }}'))"
                     x-init="init()"
+                    x-cloak
                     id="checkout-component"
                 >
                     <!-- Checkout form section -->

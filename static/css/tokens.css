@@ -140,6 +140,81 @@ body {
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Utility bar: contact info + socials, above the main nav. Desktop only —
+   there isn't room for a second row on a phone, and it would eat too much
+   of the viewport above the fold. */
+.topbar {
+  display: none;
+  background: var(--navy-900);
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  font-size: 0.8rem;
+}
+
+.topbar-contact {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.topbar-contact a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.topbar-contact a:hover {
+  color: #fff;
+}
+
+.topbar-contact i {
+  margin-right: 5px;
+  color: var(--blue-500);
+}
+
+.topbar-social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.topbar-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  font-size: 0.72rem;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.topbar-social a:hover {
+  background: var(--blue-500);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 992px) {
+  .topbar { display: block; }
+
+  /* The fixed header just grew a row taller — give it back to the pages
+     whose hero/breadcrumb sections size their own top offset to clear it.
+     (Measured: header is 90px tall with the topbar visible.) */
+  .book-page-main { padding-top: 104px; }
+  .w3l-main-slider .banner-view,
+  .w3l-about-breadcrumb { margin-top: 104px; }
+}
+
 #site-header .navbar-nav .nav-link {
   position: relative;
 }
