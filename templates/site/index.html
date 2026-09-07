@@ -1,6 +1,7 @@
-{% extends 'site/main/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
-{% block content %}
+{% block title %}Awakening Saints{% endblock %}
+{% block extra_css %}
 <style>
   .home-library {
     position: relative;
@@ -228,7 +229,9 @@
     .home-book { flex: 0 0 min(78vw, 285px); scroll-snap-align: start; }
   }
 </style>
+{% endblock %}
 
+{% block content %}
   <!-- main-slider -->
   <section class="w3l-main-slider" id="home">
     <div class="church-slider-content">
@@ -240,7 +243,7 @@
                 <div class="container">
                   <div class="banner-info-bg text-left">
                     <p>Welcome to</p>
-                    <h5>Kireka Christian Fellowship Prayer Altar</h5>
+                    <h5>Awakening Saints</h5>
                     <!--<a href="about.html" class="btn btn-white">Learn More</a>-->
                   </div>
                 </div>
@@ -426,7 +429,7 @@
       <div class="col-lg-4 bottom-ab-right">
         <div class="grdhny-info">
           <h4><a href="#" class="hnys-title">Community Outreach programs</a></h4>
-          <p class="mt-2">We as Kireka Christian Fellowship Prayer Altar engage in community outreach programs such as helping the needy as part fulfulling God's work. </p>
+          <p class="mt-2">We as Awakening Saints engage in community outreach programs such as helping the needy as part fulfulling God's work. </p>
         </div>
       </div>
 
@@ -465,5 +468,28 @@
   </div>
 </section>
 
+{% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+<script>
+  $(document).ready(function () {
+    $('.owl-one').owlCarousel({
+      loop: true,
+      margin: 0,
+      nav: false,
+      responsiveClass: true,
+      autoplay: true,
+      autoplayTimeout: 5000,
+      autoplaySpeed: 1000,
+      autoplayHoverPause: false,
+      responsive: {
+        0: { items: 1, nav: false },
+        480: { items: 1, nav: false },
+        667: { items: 1, nav: true },
+        1000: { items: 1, nav: true }
+      }
+    });
+  });
+</script>
 {% endblock %}

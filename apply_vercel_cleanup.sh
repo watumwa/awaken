@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+                                                                #!/usr/bin/env bash
 set -euo pipefail
 
 # Run this from the Git repository root after copying the patch files in place.

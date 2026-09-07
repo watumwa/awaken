@@ -14,13 +14,10 @@ urlpatterns = [
     path('add-comment/', views.add_comment, name='add_comment'),
     path('orphans/', views.orphans, name='orphans'),
     path('add-review/', views.add_review_ajax, name='add_review_ajax'),
-    path('book-preview/<slug:product_slug>/', views.book_preview, name='book_preview'),
 
     path('books/', views.index, name='books'),
     path('books-home/', views.index, name='books_legacy'),
     path('shop/<slug:cat_slug>/', views.index, name='shop_list'),
-    path('blog/', views.blog, name='blog'),
-    path('blog-details/', views.single_blog, name='blog1'),
     path('product-details/<slug:product_slug>/', views.single_product, name='product_detail'),
     path('free-download/<slug:product_slug>/', views.free_book_download, name='free_book_download'),
     path('download-success/<slug:product_slug>/', views.free_book_download_success, name='free_book_download_success'),

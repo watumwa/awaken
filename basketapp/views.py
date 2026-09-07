@@ -583,9 +583,3 @@ def download_page(request, order_id):
     return render(request, "download_page.html", {"order": order, "links": links})
 
 
-def confirmation(request):
-    return render(request, "cart/basketapp/confirmation.html")
-
-
-def tracking(request):
-    return render(request, "cart/basketapp/tracking.html")

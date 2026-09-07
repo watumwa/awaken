@@ -21,7 +21,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from .models import (
-    BookPreview,
     BookReview,
     Category,
     EmailSubscriber,
@@ -381,17 +380,6 @@ def add_review_ajax(request):
     )
 
 
-def book_preview(request, product_slug):
-    product = get_object_or_404(Product.products, product_slug=product_slug)
-    preview = get_object_or_404(BookPreview, book=product)
-
-    context = {
-        "product": product,
-        "preview": preview,
-    }
-    return render(request, "main/ecomapp/preview.html", context)
-
-
 def _book_file_response(product):
     """Serve the selected book without placing large files in the function."""
     if getattr(settings, "IS_VERCEL", False):
@@ -565,13 +553,3 @@ def subscribe_email(request):
     return HttpResponseRedirect("/?subscription_not_successfully=0")
 
 
-def contact(request):
-    return render(request, "main/ecomapp/contact.html")
-
-
-def blog(request):
-    return render(request, "main/ecomapp/blog.html")
-
-
-def single_blog(request):
-    return render(request, "main/ecomapp/single-blog.html")

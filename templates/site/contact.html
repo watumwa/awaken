@@ -1,5 +1,6 @@
-{% extends 'site/main/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
+{% block title %}Contact | Awakening Saints{% endblock %}
 {% block content %}
 
   <!-- about breadcrumb -->
@@ -85,31 +86,6 @@
                 });
         });
     </script>
-
-<script>
-// Toggle credit card input fields visibility
-function toggleCreditCardFields() {
-    var creditCardFields = document.getElementById('creditCardFields');
-    if (document.getElementById('creditCardOption').checked) {
-        creditCardFields.style.display = 'block';
-    } else {
-        creditCardFields.style.display = 'none';
-    }
-}
-
-// Show custom amount input field if 'Other' amount is selected
-document.getElementById('donationAmount').addEventListener('change', function () {
-    var customAmountWrapper = document.getElementById('customAmountWrapper');
-    if (this.value === 'custom') {
-        customAmountWrapper.style.display = 'block';
-    } else {
-        customAmountWrapper.style.display = 'none';
-    }
-});
-</script>
-
-
-
 
 
 

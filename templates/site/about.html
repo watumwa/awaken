@@ -1,5 +1,6 @@
-{% extends 'site/main/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
+{% block title %}About Us | Awakening Saints{% endblock %}
 {% block content %}
   <!-- about breadcrumb -->
   <section class="w3l-about-breadcrumb text-left">
@@ -21,10 +22,10 @@
     <div class="">
       <h6 class="sub-title">About Us</h6>
       <h3 class="hny-title">AWAKENING SAINTS</h3>
-      <p class="">
+      <div>
        <h4> Background</h4>
         <br>
-        <p>Kireka Christian Fellowship Prayer Altar is a prophetic ministry that started in 2017 its located at kireka wakiso district and it's owned by the Holy spirit. 
+        <p>Awakening Saints is a prophetic ministry that started in 2017 its located at kireka wakiso district and it's owned by the Holy spirit. 
         it has no human owner. It's beginning was prophetic, a prophesy that come from Apostle George Mutamba asking Mrs Rose Kiraga to begin a prayer Altar and they began as a family.
         Prophetess Shalom Abraham kikazi kalungi, Rose Kirraga, Apostle Nabwami Victoria, the Holy spirit fellow on Prophetess Shalom Abraham kikazi instructing 
         Apostles Barasa Robert Samuel to head the ministry
@@ -33,14 +34,14 @@
         <p>
           After wards God selected the five pillars to head his ministry through the guidance of Holy Spirit.
           Apostle Robert Barasa (Head) Kikazi Shalom kalungi head prophesy, worship team, Pastor Denis kalungi Head pastoral team, 
-          Apostle George Mutamba patron and Mrs Roses Rose kiragga Chairman elders. Kireka Christian Fellowship Prayer Altar begun as a prayer Altar.
+          Apostle George Mutamba patron and Mrs Roses Rose kiragga Chairman elders. Awakening Saints begun as a prayer Altar.
           its light every day from 12:Pm-8:00Pm up to date from Monday to Monday. This ministry is a fivefold ministry with Apostles, Teachers, Evangelists, Prophets and Pastors as in (Ephesians 4:11)..
       </p>
       <br>
         <p>
         From house to house altar to a general altar which started from a salon, later on street and to a room. 
         Through the guidance of the holy spirit after 2 and half years what was a prayer altar progressed to a Church. 
-        Kireka Christian Fellowship Prayer Altar is a registered church. with a church account number, Momo pay Number and Merchant number. 
+        Awakening Saints is a registered church. with a church account number, Momo pay Number and Merchant number. 
         check on Donate.
       </p>
     <p>
@@ -72,10 +73,9 @@
           <li><p>Welcoming thousands of members into the fellowship of our church family</p></li>
           <li><p>Developing people to spiritual maturity through bible study</p></li>
           <li><p>Helping souls discover their gifts and talents God gave them</p></li>
-          <li><p>Empowering members for missionary work and sending out for evangelism</p></li> 
+          <li><p>Empowering members for missionary work and sending out for evangelism</p></li>
         </ol>
-            
-        </p>
+        </div>
         <div class="grid-item about-quote">
           <blockquote> "Righteousness and justice are the foundation of your throne;
           love and faithfulness go before you PSALMS-89-14."</blockquote>
@@ -334,3 +334,11 @@
 
   <!-- //team -->
   {% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/jquery.waypoints.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery.countup.js' %}"></script>
+<script>
+  $('.counter').countUp();
+</script>
+{% endblock %}

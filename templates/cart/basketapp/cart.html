@@ -1,5 +1,6 @@
-{% extends 'cartbase.html' %}
+{% extends 'base.html' %}
 {% load static %}
+{% block title %}Your Cart | Awakening Saints{% endblock %}
 {% block content %}
     <!-- Banner Area -->
     <section class="banner-area">
@@ -188,3 +189,135 @@
 
 {% endblock %}
 
+{% block extra_js %}
+<script>
+  // Update cart icon counter, if present on the page.
+  function updateCartCounter(totalQty) {
+    const cartQtyEl = document.getElementById('cart_qty');
+    if (cartQtyEl) {
+      cartQtyEl.innerText = totalQty;
+      cartQtyEl.style.display = totalQty > 0 ? 'inline-block' : 'none';
+    }
+  }
+
+  // Real-time subtotal calculation from DOM
+  function updateSubtotalFromDOM() {
+    let subtotal = 0;
+    $('.product-item').each(function () {
+      const unitPrice = parseFloat($(this).find('.product-count').data('price'));
+      const qty = parseInt($(this).find('.cart-quantity-input').val()) || 0;
+      subtotal += unitPrice * qty;
+    });
+
+    $('#cart-subtotal').text('UGX ' + subtotal.toLocaleString());
+    $('#cart-total').text('UGX ' + subtotal.toLocaleString());
+  }
+
+  // Recalculate total quantity from inputs and update cart counter
+  function recalcCartTotalQty() {
+    let totalQty = 0;
+    $('.cart-quantity-input').each(function () {
+      const val = parseInt($(this).val());
+      if (!isNaN(val) && val > 0) {
+        totalQty += val;
+      }
+    });
+    updateCartCounter(totalQty);
+  }
+
+  // DELETE from cart
+  $(document).on('click', '.delete-btn', function (e) {
+    e.preventDefault();
+
+    const productID = $(this).closest('tr').data('index');
+    const productQty = $('#sst' + productID).val();
+
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'cart:cart_delete' %}",
+      data: {
+        productid: productID,
+        productqty: productQty,
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'post'
+      },
+      success: function () {
+        $('tr[data-index="' + productID + '"]').remove();
+        recalcCartTotalQty();
+        updateSubtotalFromDOM();
+      },
+      error: function () {
+        alert('An error occurred while deleting the item.');
+      }
+    });
+  });
+
+  // Debounce helper
+  function debounce(func, wait) {
+    let timeout;
+    return function () {
+      const context = this, args = arguments;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+  }
+
+  // Real-time quantity update with frontend total + subtotal update
+  $(document).on('input', '.cart-quantity-input', debounce(function () {
+    const input = $(this);
+    const productID = input.closest('tr').data('index');
+    let productQty = parseInt(input.val());
+
+    if (isNaN(productQty) || productQty < 0) {
+      productQty = 0;
+      input.val(productQty);
+    }
+
+    const row = input.closest('tr');
+    const unitPrice = parseFloat(row.find('.product-count').data('price'));
+    const itemTotal = (unitPrice * productQty).toFixed(2);
+    row.find('td[data-label="Total"] .price').text('UGX ' + Number(itemTotal).toLocaleString());
+
+    recalcCartTotalQty();
+    updateSubtotalFromDOM();
+
+    if (productQty === 0) {
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'cart:cart_delete' %}",
+        data: {
+          productid: productID,
+          productqty: productQty,
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          action: 'post'
+        },
+        success: function () {
+          $('tr[data-index="' + productID + '"]').remove();
+          recalcCartTotalQty();
+          updateSubtotalFromDOM();
+        },
+        error: function () {
+          alert('An error occurred while deleting the item.');
+        }
+      });
+    } else {
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'cart:cart_update' %}",
+        data: {
+          productid: productID,
+          productqty: productQty,
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          action: 'post'
+        },
+        success: function () {
+          recalcCartTotalQty();
+        },
+        error: function () {
+          alert('An error occurred while updating the item.');
+        }
+      });
+    }
+  }, 300));
+</script>
+{% endblock %}

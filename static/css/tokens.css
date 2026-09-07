@@ -1,0 +1,129 @@
+/*
+ * Awakening Saints design tokens.
+ * This is the single source of truth for color, spacing, radius and shadow
+ * across every page. It codifies the navy/blue palette already proven on the
+ * free-books catalogue, book detail and homepage library section.
+ */
+:root {
+  /* Brand */
+  --navy-900: #102a43;
+  --navy-800: #243b53;
+  --blue-600: #146da8;
+  --blue-500: #1098e8;
+  --link-blue: #0879bd;
+
+  /* Neutrals (slate scale) */
+  --slate-700: #334e68;
+  --slate-600: #486581;
+  --slate-500: #627d98;
+  --slate-400: #829ab1;
+  --slate-300: #bcccdc;
+  --slate-200: #d9e2ec;
+  --slate-100: #e7edf3;
+  --slate-50: #f0f4f8;
+  --white: #ffffff;
+
+  /* Accent — reserved for small badges/highlights only, never primary actions */
+  --gold-500: #f0b429;
+
+  /* Semantic aliases */
+  --color-primary: var(--blue-500);
+  --color-primary-dark: var(--blue-600);
+  --color-link: var(--link-blue);
+  --color-text: var(--navy-800);
+  --color-text-muted: var(--slate-500);
+  --color-border: var(--slate-200);
+  --color-surface: var(--white);
+  --color-bg: #f7f9fc;
+  --color-accent: var(--gold-500);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* Shadow */
+  --shadow-sm: 0 7px 20px rgba(16, 42, 67, 0.08);
+  --shadow-md: 0 12px 28px rgba(16, 42, 67, 0.12);
+
+  /* Backwards-compatible aliases used by pages migrated from bookbase.html */
+  --as-blue: var(--blue-500);
+  --as-blue-dark: var(--blue-600);
+  --as-navy: var(--navy-900);
+  --as-text: var(--navy-800);
+  --as-muted: var(--slate-500);
+  --as-border: var(--slate-200);
+  --as-bg: var(--color-bg);
+  --as-white: var(--white);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Shared button component, reused across book pages, cart and forms. */
+.book-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.book-btn:hover {
+  transform: translateY(-1px);
+}
+
+.book-btn-primary {
+  color: #fff !important;
+  background: var(--color-primary);
+}
+
+.book-btn-primary:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 7px 18px rgba(16, 152, 232, 0.22);
+}
+
+.book-btn-secondary {
+  color: var(--navy-900) !important;
+  background: #fff;
+  border-color: var(--color-border);
+}
+
+.book-btn-secondary:hover {
+  background: var(--slate-50);
+}
+
+/* Centered content-width wrapper, used by the book pages and reusable anywhere. */
+.book-page-wrap {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .book-page-wrap {
+    width: min(100% - 24px, 1180px);
+  }
+}
