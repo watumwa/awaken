@@ -1,6 +1,6 @@
 
 {% load static %}
-
+{% with current_page=request.resolver_match.url_name %}
   <header id="site-header" class="fixed-top">
     <div class="topbar">
       <div class="container topbar-inner">
@@ -17,47 +17,48 @@
       </div>
     </div>
     <div class="container">
-      <nav class="navbar navbar-expand-lg stroke">
-        <h1><a class="navbar-brand mr-lg-5" href="{% url 'sales:homeone' %}">
-        <img src="{% static 'assets/images/logo.png' %}" alt="image" style="height: 55px; width: 55px;">
-            Awakening<span>Saints</span>
-          </a></h1>
+      <nav class="navbar navbar-expand-lg stroke" aria-label="Main navigation">
+        <h1 class="site-brand-heading">
+          <a class="navbar-brand mr-lg-5" href="{% url 'sales:homeone' %}" aria-label="Awakening Saints home">
+            <img class="site-logo" src="{% static 'assets/images/logo.png' %}" alt="" width="55" height="55">
+            <span class="site-brand-name">Awakening<span>Saints</span></span>
+          </a>
+        </h1>
  
 
-        <button class="navbar-toggler collapsed bg-gradient" type="button" data-bs-toggle="collapse"
+        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
         data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
-        aria-label="Toggle navigation">
+        aria-label="Open navigation menu">
 
-	          <span class="navbar-toggler-icon fa icon-expand fa-bars"></span>
-	          <span class="navbar-toggler-icon fa icon-close fa-times"></span>
-	        </button>
+	          <span class="navbar-toggler-icon fa icon-expand fa-bars" aria-hidden="true"></span>
+	          <span class="navbar-toggler-icon fa icon-close fa-times" aria-hidden="true"></span>
+	      </button>
 
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-                <a href="{% url 'sales:homeone' %}" class="nav-link">Home<span class="sr-only">(current)</span></a>
+            <li class="nav-item{% if current_page == 'homeone' %} active{% endif %}">
+                <a href="{% url 'sales:homeone' %}" class="nav-link"{% if current_page == 'homeone' %} aria-current="page"{% endif %}>Home</a>
             </li>
 
-                        
-            <li>
-                <a href="{% url 'sales:about' %}" class="nav-link">About</a>
+            <li class="nav-item{% if current_page == 'about' %} active{% endif %}">
+                <a href="{% url 'sales:about' %}" class="nav-link"{% if current_page == 'about' %} aria-current="page"{% endif %}>About</a>
             </li>
 
-            <li class="nav-item">
-                <a href="{% url 'sales:contact' %}" class="nav-link">Contact</a>
+            <li class="nav-item{% if current_page == 'contact' %} active{% endif %}">
+                <a href="{% url 'sales:contact' %}" class="nav-link"{% if current_page == 'contact' %} aria-current="page"{% endif %}>Contact</a>
             </li>
 
-            <li class="nav-item">
-                <a href="{% url 'sales:services' %}" class="nav-link">Services</a>
+            <li class="nav-item{% if current_page == 'services' %} active{% endif %}">
+                <a href="{% url 'sales:services' %}" class="nav-link"{% if current_page == 'services' %} aria-current="page"{% endif %}>Services</a>
             </li>
 
-            <li class="nav-item">
-                <a href="{% url 'sales:books' %}" class="nav-link">Books</a>
+            <li class="nav-item{% if current_page == 'books' or current_page == 'shop_list' or current_page == 'product_detail' or current_page == 'free_book_download' or current_page == 'free_book_download_success' or current_page == 'verified_book_review' %} active{% endif %}">
+                <a href="{% url 'sales:books' %}" class="nav-link"{% if current_page == 'books' or current_page == 'shop_list' or current_page == 'product_detail' or current_page == 'free_book_download' or current_page == 'free_book_download_success' or current_page == 'verified_book_review' %} aria-current="page"{% endif %}>Books</a>
             </li>
 
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown{% if current_page == 'donate' or current_page == 'orphans' or current_page == 'media' or current_page == 'dashboard' or current_page == 'login' or current_page == 'registration' %} active{% endif %}">
             <a class="nav-link dropdown-toggle" href="#" id="navbarMoreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              More
+              More <i class="fas fa-chevron-down nav-dropdown-icon" aria-hidden="true"></i>
             </a>
           <ul class="dropdown-menu" aria-labelledby="navbarMoreDropdown">
 
@@ -88,6 +89,8 @@
 
       </nav>
     </div>
+    <button class="mobile-nav-backdrop" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-label="Close navigation menu" tabindex="-1"></button>
   </header>
 
+{% endwith %}
 
