@@ -1,12 +1,13 @@
 import csv
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import Count
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 
+from .book_covers import CoverGenerationError, generate_product_cover
 from .models import (
     BookOrder,
     BookOrderItem,
@@ -43,11 +44,19 @@ class ProductAdmin(ModelAdmin):
     prepopulated_fields = {"product_slug": ("title",)}
     search_fields = ("title", "author", "category__cat_name")
     list_select_related = ("category",)
+    actions = ("generate_missing_covers",)
     fieldsets = (
         ("Book details", {"fields": ("title", "author", "category", "product_slug", "description", "is_active")}),
         (
             "Free digital download",
-            {"fields": ("product_image", "cover_preview", "book_file")},
+            {
+                "fields": ("book_file", "product_image", "cover_preview"),
+                "description": (
+                    "Upload a PDF and leave the cover empty to generate it from "
+                    "the first page automatically. A manually uploaded cover is "
+                    "never replaced."
+                ),
+            },
         ),
         ("Legacy commerce fields", {
             "fields": ("product_price", "qty_in_stock"),
@@ -57,10 +66,63 @@ class ProductAdmin(ModelAdmin):
     )
 
     def save_model(self, request, obj, form, change):
-        """Record the administrator who creates each product."""
+        """Record the owner and generate a missing cover after the PDF is saved."""
         if not change and not obj.created_by_id:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
+
+        try:
+            generated = generate_product_cover(obj)
+        except CoverGenerationError as exc:
+            self.message_user(
+                request,
+                f"The book was saved, but its cover was not generated: {exc}",
+                level=messages.WARNING,
+            )
+        else:
+            if generated:
+                self.message_user(
+                    request,
+                    "A web-optimized cover was generated from the PDF's first page.",
+                    level=messages.SUCCESS,
+                )
+
+    @admin.action(description="Generate missing covers from selected PDFs")
+    def generate_missing_covers(self, request, queryset):
+        generated_count = 0
+        skipped_count = 0
+        failures = []
+
+        for product in queryset:
+            try:
+                if generate_product_cover(product):
+                    generated_count += 1
+                else:
+                    skipped_count += 1
+            except CoverGenerationError as exc:
+                failures.append(f"{product.title}: {exc}")
+
+        if generated_count:
+            self.message_user(
+                request,
+                f"Generated {generated_count} cover(s).",
+                level=messages.SUCCESS,
+            )
+        if skipped_count:
+            self.message_user(
+                request,
+                f"Skipped {skipped_count} book(s) that already have a cover or are not PDFs.",
+                level=messages.INFO,
+            )
+        if failures:
+            details = "; ".join(failures[:3])
+            if len(failures) > 3:
+                details += f"; and {len(failures) - 3} more"
+            self.message_user(
+                request,
+                f"Could not generate {len(failures)} cover(s): {details}",
+                level=messages.WARNING,
+            )
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(_free_download_count=Count("free_downloads"))
@@ -101,8 +163,8 @@ class ProductAdmin(ModelAdmin):
     @admin.display(description="Cover preview")
     def cover_preview(self, obj):
         if not obj:
-            return "Save the book, then upload its cover image."
-        note = "Upload the book's real cover to replace this library placeholder." if not obj.has_usable_cover else ""
+            return "Upload a PDF and save it to generate the cover automatically."
+        note = "Save a PDF to generate its cover, or upload a cover manually." if not obj.has_usable_cover else ""
         return format_html(
             '<img src="{}" style="width:180px;max-height:260px;object-fit:cover;'
             'border-radius:10px;box-shadow:0 8px 20px rgba(15,23,42,.18);" '

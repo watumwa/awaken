@@ -51,7 +51,7 @@ class FreeBookDownloadTests(TestCase):
         response = self.client.get(reverse("sales:books"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "available to download free")
+        self.assertContains(response, "Every available title is free to download")
         self.assertContains(response, reverse("sales:free_book_download", args=[self.product.product_slug]))
 
     def test_legacy_missing_cover_uses_the_library_placeholder(self):
