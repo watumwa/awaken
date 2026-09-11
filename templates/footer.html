@@ -1,93 +1,76 @@
 {% load static %}
-
-  <section class="w3l-footer-29-main">
-    <div class="footer-29 py-5">
-      <div class="container py-lg-4">
-        <div class="row footer-top-29">
-          <div class="footer-list-29 col-lg-4">
-              <h6 class="footer-title-29">Awakening Saints</h6>
-              <p class="pr-lg-5">Many souls have lost their way to the devils's world because there aren't many people to remind them 
-                of the goodness of God and that heaven is real hence a group of believers came together 
-                and formed this website to keep the souls in the presence of God</p>
-              <div class="main-social-footer-29 mt-4">
-
-                  <a  href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                    <i class="fab fa-facebook"></i>
-                  </a>
-
-                  <a href="https://x.com/awakeningsiants" class="twitter">
-                    <i class="fab fa-twitter"></i>
-                  </a>
-
-
-                  <a href="https://www.youtube.com/@awakeningsaints.org_2wh " class="youtube">
-                    <i class="fab fa-youtube"></i>
-                  </a>
-
-              </div>
-          </div>
-  
-          <div class="col-lg-2 col-md-6 col-sm-4 footer-list-29 footer-2 mt-lg-0 mt-5">
-          <ul>
-           
-          </ul>
-             <ul>
-                <h6 class="footer-title-29">Useful Links</h6>
-                 <li><a href="{% url 'sales:homeone' %}">Home</a></li>
-                <li><a href="{% url 'sales:services' %}">Services</a></li>
-                <li><a href="{% url 'sales:about' %}">About us</a></li>
-                <li><a href= "{% url 'sales:books' %}">Books</a></li>
-                <li><a href="{% url 'sales:contact' %}">Contact Us</a></li>
-               
-              </ul>
-          </div>
-  
-       
-  
-          <div class="col-lg-3 col-md-6 col-sm-8 footer-list-29 footer-1 mt-lg-0 mt-5">
-              <h6 class="footer-title-29">Contact Us</h6>
-              <ul>
-                <li><p><span class="fa fa-map-marker"></span> 
-               Kireka Banda, Kampala</p></li>
-                <li><a href="tel:+256706344822"><span class="fa fa-phone"></span>+(256) 706344822</a></li>
-                <li><a href="mailto:awakeningsaints1@gmail.com" class="mail"><i class="fas fa-envelope"></i> awakeningsaints1@gmail.com</a></li>
-              </ul>
-          </div>
+<footer class="as-footer">
+  <div class="container">
+    <div class="as-footer__top">
+      <div class="as-footer__brand">
+        <a class="as-footer__logo" href="{% url 'sales:homeone' %}">
+          <span class="as-footer__logo-mark"><img src="{% static 'assets/images/logo.png' %}" alt="" width="50" height="50"></span>
+          <span>Awakening Saints</span>
+        </a>
+        <p>A prophetic ministry helping people grow in truth, prayer, righteousness and a life rooted in Christ.</p>
+        <div class="as-footer__socials" aria-label="Social media links">
+          <a href="https://www.facebook.com/profile.php?id=100089707950048&amp;mibextid=ZbWKwL" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
+          <a href="https://x.com/awakeningsiants" target="_blank" rel="noopener" aria-label="X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></a>
+          <a href="https://www.youtube.com/@awakeningsaints.org_2wh" target="_blank" rel="noopener" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
         </div>
       </div>
+
+      <div class="as-footer__column">
+        <h2>Explore</h2>
+        <ul>
+          <li><a href="{% url 'sales:about' %}">Our story</a></li>
+          <li><a href="{% url 'sales:books' %}">Free books</a></li>
+          <li><a href="{% url 'sales:media' %}">Sermons</a></li>
+          <li><a href="{% url 'sales:services' %}">Ministries</a></li>
+          <li><a href="{% url 'sales:orphans' %}">Community outreach</a></li>
+        </ul>
+      </div>
+
+      <div class="as-footer__column">
+        <h2>Gather with us</h2>
+        <div class="as-footer__schedule">
+          <div><span>Monday–Saturday</span><strong>12:00 PM–8:00 PM</strong></div>
+          <div><span>Sunday services</span><strong>8:00 AM &amp; 10:00 AM</strong></div>
+        </div>
+        <a class="as-footer__direction" href="https://www.google.com/maps/search/?api=1&amp;query=Kireka+Christian+Fellowship+Prayer+Altar" target="_blank" rel="noopener">
+          Get directions <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </div>
+
+      <div class="as-footer__column as-footer__contact">
+        <h2>Contact</h2>
+        <address>
+          <a href="https://www.google.com/maps/search/?api=1&amp;query=Kireka+Christian+Fellowship+Prayer+Altar" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>Kireka Banda<br>Kampala, Uganda</span></a>
+          <a href="tel:+256706344822"><i class="fa-solid fa-phone" aria-hidden="true"></i><span>+256 706 344 822</span></a>
+          <a href="mailto:awakeningsaints1@gmail.com"><i class="fa-regular fa-envelope" aria-hidden="true"></i><span>awakeningsaints1@gmail.com</span></a>
+        </address>
+      </div>
     </div>
-  </section>
- 
-<section class="w3l-footer-29-main w3l-copyright">
-  <div class="container">
-    <div class="bottom-copies">
-      <p class="copy-footer-29 text-center">© {% now "Y" %} Awakening Saints. All rights reserved.</p>
+
+    <div class="as-footer__bottom">
+      <p>© {% now "Y" %} Awakening Saints. All rights reserved.</p>
+      <p>Taking the church back to its true foundation.</p>
     </div>
   </div>
 
-  <!-- move top -->
-  <button onclick="topFunction()" id="movetop" title="Go to top">
-    <span class="fa fa-angle-up"></span>
+  <button class="as-to-top" id="movetop" type="button" aria-label="Back to top">
+    <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
   </button>
-  <script>
-    // When the user scrolls down 20px from the top of the document, show the button
-    window.onscroll = function () {
-      scrollFunction()
-    };
+</footer>
 
-    function scrollFunction() {
-      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-        document.getElementById("movetop").style.display = "block";
-      } else {
-        document.getElementById("movetop").style.display = "none";
-      }
+<script>
+  (function () {
+    var button = document.getElementById('movetop');
+    if (!button) return;
+
+    function updateBackToTop() {
+      button.classList.toggle('is-visible', window.scrollY > 500);
     }
 
-    // When the user clicks on the button, scroll to the top of the document
-    function topFunction() {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    }
-  </script>
-  <!-- /move top -->
-</section>
+    window.addEventListener('scroll', updateBackToTop, { passive: true });
+    button.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    updateBackToTop();
+  }());
+</script>

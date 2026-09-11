@@ -1,344 +1,132 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}About Us | Awakening Saints{% endblock %}
+
+{% block title %}Our Story | Awakening Saints{% endblock %}
+{% block meta_description %}Learn how Awakening Saints grew from a family prayer altar into a prophetic fivefold ministry serving Kireka, Kampala and beyond.{% endblock %}
+{% block main_class %}as-page{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/page-modern.css' %}">{% endblock %}
+
 {% block content %}
-  <!-- about breadcrumb -->
-  <section class="w3l-about-breadcrumb text-left">
-    <div class="breadcrumb-bg breadcrumb-bg-about py-sm-5 py-4">
-      <div class="container py-2">
-        <h2 class="title">About Us</h2>
-        <ul class="breadcrumbs-custom-path mt-2">
-          <li><a href="{% url 'sales:homeone' %}">Home</a></li>
-          <li class="active"><span class="fa fa-arrow-right mx-2" aria-hidden="true"></span> About </li>
-        </ul>
+<section class="as-page-hero" aria-labelledby="page-title">
+  <img class="as-page-hero__image" src="{% static 'assets/images/banner3.jpg' %}" alt="" width="736" height="449">
+  <div class="as-page-hero__shade" aria-hidden="true"></div>
+  <div class="as-page-hero__dots" aria-hidden="true"></div>
+  <div class="container as-page-hero__content">
+    <span class="as-page-hero__eyebrow"><i class="fa-solid fa-seedling" aria-hidden="true"></i> Our story</span>
+    <h1 id="page-title">A prayer altar with a growing purpose.</h1>
+    <p>Discover the journey, calling and people behind Awakening Saints.</p>
+    <ol class="as-breadcrumbs" aria-label="Breadcrumb">
+      <li><a href="{% url 'sales:homeone' %}">Home</a></li>
+      <li><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></li>
+      <li aria-current="page">About us</li>
+    </ol>
+  </div>
+</section>
+
+<section class="as-page-section">
+  <div class="container as-about-intro">
+    <div class="as-about-intro__visual">
+      <img src="{% static 'assets/images/banner1.jpg' %}" alt="A congregation gathered in worship" width="800" height="449" loading="lazy">
+      <div class="as-about-intro__badge">
+        <i class="fa-solid fa-fire-flame-curved" aria-hidden="true"></i>
+        <span><strong>Prayer has always been our foundation</strong><small>A living altar, open throughout the week</small></span>
       </div>
     </div>
-  </section>
-  <!-- //about breadcrumb -->
-  
-<!-- /about-6-->
-<section class="w3l-cta4 py-5">
-  <div class="container py-lg-5">
-    <div class="">
-      <h6 class="sub-title">About Us</h6>
-      <h3 class="hny-title">AWAKENING SAINTS</h3>
-      <div>
-       <h4> Background</h4>
-        <br>
-        <p>Awakening Saints is a prophetic ministry that started in 2017 its located at kireka wakiso district and it's owned by the Holy spirit. 
-        it has no human owner. It's beginning was prophetic, a prophesy that come from Apostle George Mutamba asking Mrs Rose Kiraga to begin a prayer Altar and they began as a family.
-        Prophetess Shalom Abraham kikazi kalungi, Rose Kirraga, Apostle Nabwami Victoria, the Holy spirit fellow on Prophetess Shalom Abraham kikazi instructing 
-        Apostles Barasa Robert Samuel to head the ministry
-        </p>
-      <br>
-        <p>
-          After wards God selected the five pillars to head his ministry through the guidance of Holy Spirit.
-          Apostle Robert Barasa (Head) Kikazi Shalom kalungi head prophesy, worship team, Pastor Denis kalungi Head pastoral team, 
-          Apostle George Mutamba patron and Mrs Roses Rose kiragga Chairman elders. Awakening Saints begun as a prayer Altar.
-          its light every day from 12:Pm-8:00Pm up to date from Monday to Monday. This ministry is a fivefold ministry with Apostles, Teachers, Evangelists, Prophets and Pastors as in (Ephesians 4:11)..
-      </p>
-      <br>
-        <p>
-        From house to house altar to a general altar which started from a salon, later on street and to a room. 
-        Through the guidance of the holy spirit after 2 and half years what was a prayer altar progressed to a Church. 
-        Awakening Saints is a registered church. with a church account number, Momo pay Number and Merchant number. 
-        check on Donate.
-      </p>
-    <p>
-        
-    Church program. Lunch hour service from 12: 00 PM- 2:30 PM daily Evening service from 05:Pm-8:00PM daily Sunday service first service from 8:Am-10:00AM, 
-    Second service from 10:00AM-1:15PM. Where by its core value is righteousness and holiness.
-    </p>
-
-<br>
-       <h4>Vision:</h4> 
-       <p>To take back the church to true foundation and teaching the true word in order for the church to get 100 % on the earth 100 % in heaven.
-           Righteousness and holiness are the foundation of his throne (psalms 89; 14), seeking the kingdom of heaven and his righteousness and the rest will be added unto you (Mathew 6:33).
-          </p>
-        <br>
-        <p>To empower believers spiritually, financially, physically, morally, academically with wisdom, knowledge and understanding through the word of the living God..</p>
-
-       <br><br>
-       <h4>Mission:</h4>  
-       <p>Taking back the church to its true foundation</p>
-        <br>
-        <br>
-        <h4>Objectives</h4>
-  <br>
-        <ol>
-          <li><p>Turning seeker into saints</p></li>
-          <li><p>Members into ministers</p></li>
-          <li><p>Church goers into an army of God</p></li>
-          <li><p>Sharing the good news of Jesus Christ with hundreds of thousands of residents in Kireka Wakiso Uganda</p></li>
-          <li><p>Welcoming thousands of members into the fellowship of our church family</p></li>
-          <li><p>Developing people to spiritual maturity through bible study</p></li>
-          <li><p>Helping souls discover their gifts and talents God gave them</p></li>
-          <li><p>Empowering members for missionary work and sending out for evangelism</p></li>
-        </ol>
-        </div>
-        <div class="grid-item about-quote">
-          <blockquote> "Righteousness and justice are the foundation of your throne;
-          love and faithfulness go before you PSALMS-89-14."</blockquote>
-        </div>
-    </div>
-    <div class="row mt-5">
-      <div class="col-md-6">
-        <img src="{% static 'assets/images/banner3.jpg' %}" class="img-fluid" alt="Church Service">
-      </div>
-      <div class="col-md-6 mt-md-0 mt-4">
-        <img src="{% static 'assets/images/banner1.jpg' %}" class="img-fluid" alt="Church Community Event">
+    <div class="as-about-intro__copy">
+      <span class="as-page-eyebrow"><i class="fa-solid fa-church" aria-hidden="true"></i> Who we are</span>
+      <h2>Born in prayer.<br>Built by faith.</h2>
+      <p class="as-about-intro__lead">Awakening Saints is a prophetic ministry that began in 2017 when a family answered God’s call to establish a prayer altar.</p>
+      <p>What started from house to house later gathered in a salon, on the street and then in a dedicated room. Through prayer and the guidance of the Holy Spirit, that altar grew into a registered church and a fivefold ministry of apostles, prophets, evangelists, pastors and teachers.</p>
+      <p>Today, we continue to welcome people seeking biblical truth, spiritual growth, prayer and a community in which they can discover and use their God-given gifts.</p>
+      <div class="as-about-intro__facts" aria-label="Ministry facts">
+        <div><strong>Established</strong><span>Founded in 2017</span></div>
+        <div><strong>Our foundation</strong><span>Prayer and God’s Word</span></div>
+        <div><strong>Our home</strong><span>Kireka, Kampala</span></div>
       </div>
     </div>
   </div>
 </section>
 
-  <!-- //about-6-->
-  
-  <!-- /content-6-->
-  <section class="w3l-content-6 py-5" id="why">
-    <div class="container py-lg-5">
-      <div class="row">
-        <div class="col-lg-4 content-6-left">
-          <h6 class="sub-title">Why Choose Us</h6>
-          <h3 class="hny-title">A Community Built on Faith and Love</h3>
-        </div>
-        <div class="col-lg-4 content-6-right mt-lg-0 mt-4">
-          <p class="mb-3">Our church is dedicated to fostering a welcoming environment where individuals and families can grow in their faith.</p>
-          <p class="mb-3">We focus on supporting each other through prayer, fellowship, and outreach programs, building a strong, united community.</p>
-        </div>
-        <div class="col-lg-4 content-6-right mt-lg-0 mt-4">
-          <p class="mb-3">With a commitment to service, we engage in local and global missions, sharing God’s love with those in need.</p>
-          <p class="mb-3">Join us in making a difference, spreading kindness, and growing spiritually in Christ’s love.</p>
-        </div>
-      </div>
+<section class="as-page-section as-page-section--cloud" aria-labelledby="purpose-title">
+  <div class="container">
+    <div class="as-page-heading as-page-heading--center">
+      <span class="as-page-eyebrow"><i class="fa-regular fa-compass" aria-hidden="true"></i> What guides us</span>
+      <h2 id="purpose-title">A clear vision. A faithful mission.</h2>
+      <p>Everything we do is shaped by a desire to restore biblical foundations and equip believers for a whole, purposeful life.</p>
     </div>
-  </section>
-  
-<!-- //content-6-->
-  
- <!-- stats -->
-<section class="w3l-statshny py-5" id="stats">
-  <div class="container py-lg-5 py-md-4">
-    <div class="w3-stats-inner-info">
-      <div class="row">
-        <div class="col-lg-4 col-6 stats_info counter_grid text-left">
-          <span class="fa fa-smile-o"></span>
-          <p class="counter">2000</p>
-          <h4>Faithful Members</h4>
-        </div>
-        <div class="col-lg-4 col-6 stats_info counter_grid1 text-left">
-          <span class="fa fa-users"></span>
-          <p class="counter">100</p>
-          <h4>Church Events</h4>
-        </div>
-        <div class="col-lg-4 col-6 stats_info counter_grid mt-lg-0 mt-5 text-left">
-          <span class="fa fa-leaf"></span>
-          <p class="counter">15</p>
-          <h4>Ministries</h4>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- //stats -->
-
-<!-- team -->
-<section class="w3l-team" id="team">
-  <div class="team-block py-5" style="margin-bottom: 4rem;">
-    <div class="container py-lg-5">
-      <div class="title-content text-center mb-lg-3 mb-4">
-        <h6 class="sub-title">Our Dedicated Leadership</h6>
-        <h3 class="hny-title-1">Meet Our Pastors and Leaders</h3>
-      </div>
-      <div class="row">
-
-      <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-            <a href="#url"><img src="{% static 'assets/images/robert_barasa.jpg' %}" alt="robert_barasa" class="img-fluid"></a>
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Pr.Robert Barasa</a></h3>
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        
-        <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-            <a href="#url"><img src="{% static 'assets/images/team2.jpg' %}" alt="Pastor Shalom Kalungi" class="img-fluid"/></a>
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Pr. Shalom Kalungi</a></h3>
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-         
-            <a href="#url"><img src="{% static 'assets/images/denis.jpeg' %}" alt="Pastor Denis Kalungi" class="img-fluid"  /></a> <!--style="height: 500px; object-fit: cover;"-->
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Pr. Denis Kalungi</a></h3>
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        
-       
-        <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-            <a href="#url"><img src="{% static 'assets/images/david.jpg' %}" alt="Pastor David ssempa figo" class="img-fluid"></a>
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Pr David Ssempa</a></h3>
-              
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-            <a href="#url"><img src="{% static 'assets/images/alex_sebufu.jpg' %}" alt="Pastor Alex Sebuufu" class="img-fluid"></a>
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Pr. Alex Sebuufu</a></h3>
-              
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-            <a href="#url"><img src="{% static 'assets/images/barasa_victoria.jpg' %}" alt="victoria_barasa" class="img-fluid"></a>
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Pr.Barasa Victoria</a></h3>
-              
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-            <a href="#url"><img src="{% static 'assets/images/rose_kiraga.jpg' %}" alt="rose kiraga" class="img-fluid"></a>
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Elder.Rose Kiraga</a></h3>
-              
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-6 mt-lg-5 mt-4">
-          <div class="box16">
-            <a href="#url"><img src="{% static 'assets/images/george_mutumba.jpg' %}" alt="rgeorge_mutumba" class="img-fluid"></a>
-            <div class="box-content">
-              <h3 class="title"><a href="#url">Pr.George Mutumba</a></h3>
-            
-              <ul class="social">
-                <li>
-                  <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" class="facebook">
-                  <i class="fab fa-facebook-f"></i>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="twitter">
-                  <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        
-      </div>
+    <div class="as-purpose-grid">
+      <article class="as-purpose-card as-purpose-card--dark">
+        <span class="as-purpose-card__icon"><i class="fa-regular fa-eye" aria-hidden="true"></i></span>
+        <h3>Our vision</h3>
+        <p>To take the church back to its true foundation, teaching the true Word so believers may live fully for God on earth and in eternity.</p>
+      </article>
+      <article class="as-purpose-card">
+        <span class="as-purpose-card__icon"><i class="fa-solid fa-bullseye" aria-hidden="true"></i></span>
+        <h3>Our mission</h3>
+        <p>To turn seekers into saints, members into ministers and churchgoers into a prepared, compassionate army of God.</p>
+      </article>
+      <article class="as-purpose-card">
+        <span class="as-purpose-card__icon"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i></span>
+        <h3>Our commitment</h3>
+        <p>To empower people spiritually, financially, physically, morally and academically through wisdom, knowledge and understanding.</p>
+      </article>
     </div>
   </div>
 </section>
 
-  <!-- //team -->
-  {% endblock %}
+<section class="as-page-section as-page-section--white" aria-labelledby="journey-title">
+  <div class="container">
+    <div class="as-page-heading">
+      <span class="as-page-eyebrow"><i class="fa-solid fa-route" aria-hidden="true"></i> Our journey</span>
+      <h2 id="journey-title">Faithful through every season.</h2>
+      <p>Our setting has changed through the years, but the calling to prayer, truth and service has remained.</p>
+    </div>
+    <div class="as-timeline">
+      <article class="as-timeline__item"><span class="as-timeline__marker">2017</span><h3>A family prayer altar</h3><p>A prophetic word inspired a family to begin meeting consistently in prayer.</p></article>
+      <article class="as-timeline__item"><span class="as-timeline__marker"><i class="fa-solid fa-house" aria-hidden="true"></i></span><h3>House to house</h3><p>The altar moved through homes and continued to welcome people hungry for God.</p></article>
+      <article class="as-timeline__item"><span class="as-timeline__marker"><i class="fa-solid fa-people-group" aria-hidden="true"></i></span><h3>A growing fellowship</h3><p>Gatherings expanded into a salon, onto the street and finally into a dedicated room.</p></article>
+      <article class="as-timeline__item"><span class="as-timeline__marker">Today</span><h3>A registered church</h3><p>Awakening Saints now serves through worship, teaching, counselling and outreach.</p></article>
+    </div>
+  </div>
+</section>
 
-{% block extra_js %}
-<script src="{% static 'assets/js/jquery.waypoints.min.js' %}"></script>
-<script src="{% static 'assets/js/jquery.countup.js' %}"></script>
-<script>
-  $('.counter').countUp();
-</script>
+<section class="as-page-section">
+  <div class="container">
+    <div class="as-quote-panel">
+      <i class="fa-solid fa-quote-left" aria-hidden="true"></i>
+      <blockquote>“Righteousness and justice are the foundation of your throne; love and faithfulness go before you.”</blockquote>
+      <cite>Psalm 89:14</cite>
+    </div>
+  </div>
+</section>
+
+<section class="as-page-section as-page-section--white" aria-labelledby="leaders-title">
+  <div class="container">
+    <div class="as-page-heading as-page-heading--center">
+      <span class="as-page-eyebrow"><i class="fa-solid fa-people-group" aria-hidden="true"></i> Ministry leadership</span>
+      <h2 id="leaders-title">Meet those who serve.</h2>
+      <p>Our leaders serve together across pastoral care, teaching, prophecy, worship and community ministry.</p>
+    </div>
+    <div class="as-leader-grid">
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/robert_barasa.jpg' %}" alt="Pastor Robert Barasa" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>Robert Barasa</h3><p>Ministry head</p></div></article>
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/team2.jpg' %}" alt="Pastor Shalom Kalungi" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>Shalom Kalungi</h3><p>Prophecy &amp; worship</p></div></article>
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/denis.jpeg' %}" alt="Pastor Denis Kalungi" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>Denis Kalungi</h3><p>Pastoral ministry</p></div></article>
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/david.jpg' %}" alt="Pastor David Ssempa" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>David Ssempa</h3><p>Pastoral team</p></div></article>
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/alex_sebufu.jpg' %}" alt="Pastor Alex Sebuufu" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>Alex Sebuufu</h3><p>Pastoral team</p></div></article>
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/barasa_victoria.jpg' %}" alt="Apostle Victoria Barasa" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>Victoria Barasa</h3><p>Apostolic ministry</p></div></article>
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/rose_kiraga.jpg' %}" alt="Elder Rose Kiraga" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>Rose Kiraga</h3><p>Chair of elders</p></div></article>
+      <article class="as-leader-card"><div class="as-leader-card__image"><img src="{% static 'assets/images/george_mutumba.jpg' %}" alt="Apostle George Mutumba" width="360" height="430" loading="lazy"></div><div class="as-leader-card__body"><h3>George Mutumba</h3><p>Ministry patron</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="as-page-section">
+  <div class="container">
+    <div class="as-cta-panel">
+      <div><h2>Your journey can begin here.</h2><p>Join us for worship, prayer and biblical teaching in Kireka, Kampala.</p></div>
+      <a class="as-button as-button--primary" href="{% url 'sales:contact' %}">Plan your visit <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+    </div>
+  </div>
+</section>
 {% endblock %}

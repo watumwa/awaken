@@ -97,10 +97,14 @@ def indexone(request):
         .exclude(book_file="")
         .order_by("-download_count", "-created")[:8]
     )
+    latest_sermon = SermonContent.objects.order_by("-uploaded_at").first()
     return render(
         request,
         "site/index.html",
-        {"featured_books": featured_books},
+        {
+            "featured_books": featured_books,
+            "latest_sermon": latest_sermon,
+        },
     )
 
 
@@ -551,5 +555,4 @@ def subscribe_email(request):
             EmailSubscriber.objects.get_or_create(email=email)
         return HttpResponseRedirect("/?subscribed_successfully=1")
     return HttpResponseRedirect("/?subscription_not_successfully=0")
-
 

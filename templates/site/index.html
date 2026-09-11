@@ -1,397 +1,117 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Awakening Saints{% endblock %}
+
+{% block title %}Awakening Saints | Faith, Truth & Transformation{% endblock %}
+{% block meta_description %}Grow in faith with Awakening Saints. Explore free Christian books, sermons, prayer, counselling and a welcoming church community in Kireka, Kampala.{% endblock %}
+{% block main_class %}as-home{% endblock %}
+
 {% block extra_css %}
-<style>
-  .home-library {
-    position: relative;
-    overflow: hidden;
-    padding: 78px 0 82px;
-    background:
-      radial-gradient(circle at 95% 8%, rgba(16, 152, 232, .12), transparent 27%),
-      linear-gradient(180deg, #f7fbfe 0%, #ffffff 100%);
-  }
-
-  .home-library::before {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: min(1110px, calc(100% - 30px));
-    height: 1px;
-    content: "";
-    background: #dbe8f1;
-    transform: translateX(-50%);
-  }
-
-  .home-library__header {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 32px;
-    margin-bottom: 30px;
-  }
-
-  .home-library__intro { max-width: 680px; }
-
-  .home-library__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 9px;
-    color: #0879bd;
-    font-size: .78rem;
-    font-weight: 700;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-  }
-
-  .home-library__header h2 {
-    margin: 0;
-    color: #102a43;
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1.12;
-  }
-
-  .home-library__header p {
-    margin: 12px 0 0;
-    color: #627d98;
-    font-size: 1rem;
-    line-height: 1.7;
-  }
-
-  .home-library__all {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    min-height: 48px;
-    padding: 11px 18px;
-    color: #fff;
-    background: #1098e8;
-    border-radius: 9px;
-    font-weight: 700;
-    text-decoration: none !important;
-    box-shadow: 0 9px 22px rgba(16, 152, 232, .2);
-    transition: transform .18s ease, background .18s ease;
-  }
-
-  .home-library__all:hover {
-    color: #fff;
-    background: #0879bd;
-    transform: translateY(-2px);
-  }
-
-  .home-books-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 24px;
-  }
-
-  .home-book {
-    display: flex;
-    min-width: 0;
-    overflow: hidden;
-    flex-direction: column;
-    background: #fff;
-    border: 1px solid #e1eaf1;
-    border-radius: 14px;
-    box-shadow: 0 10px 28px rgba(16, 42, 67, .08);
-    transition: transform .2s ease, box-shadow .2s ease;
-  }
-
-  .home-book:hover {
-    box-shadow: 0 18px 38px rgba(16, 42, 67, .14);
-    transform: translateY(-5px);
-  }
-
-  .home-book__cover {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    aspect-ratio: 4 / 5;
-    background: #eaf1f6;
-  }
-
-  .home-book__cover img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform .25s ease;
-  }
-
-  .home-book:hover .home-book__cover img { transform: scale(1.025); }
-
-  .home-book__free {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 5px 9px;
-    color: #17663a;
-    background: rgba(238, 253, 244, .95);
-    border-radius: 999px;
-    font-size: .7rem;
-    font-weight: 800;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    box-shadow: 0 3px 10px rgba(16, 42, 67, .12);
-  }
-
-  .home-book__body {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    padding: 17px;
-  }
-
-  .home-book__topic {
-    overflow: hidden;
-    margin-bottom: 6px;
-    color: #0879bd;
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .06em;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .home-book h3 {
-    display: -webkit-box;
-    overflow: hidden;
-    min-height: 2.7em;
-    margin: 0 0 5px;
-    color: #102a43;
-    font-size: 1.05rem;
-    line-height: 1.35;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-
-  .home-book h3 a { color: inherit; text-decoration: none; }
-  .home-book h3 a:hover { color: #0879bd; }
-
-  .home-book__author {
-    overflow: hidden;
-    margin: 0 0 15px;
-    color: #627d98;
-    font-size: .86rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .home-book__actions {
-    display: grid;
-    grid-template-columns: .8fr 1.35fr;
-    gap: 8px;
-    margin-top: auto;
-  }
-
-  .home-book__button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 41px;
-    padding: 8px 7px;
-    border: 1px solid #d9e2ec;
-    border-radius: 8px;
-    font-size: .78rem;
-    font-weight: 700;
-    line-height: 1.2;
-    text-decoration: none !important;
-  }
-
-  .home-book__button--view { color: #243b53; background: #fff; }
-  .home-book__button--view:hover { color: #102a43; background: #f0f4f8; }
-  .home-book__button--download { color: #fff; background: #1098e8; border-color: #1098e8; }
-  .home-book__button--download:hover { color: #fff; background: #0879bd; border-color: #0879bd; }
-
-  @media (max-width: 991px) {
-    .home-books-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-
-  @media (max-width: 575px) {
-    .home-library { padding: 56px 0 62px; }
-    .home-library__header { align-items: flex-start; flex-direction: column; gap: 20px; }
-    .home-library__all { width: 100%; }
-    .home-books-grid {
-      display: flex;
-      overflow-x: auto;
-      gap: 16px;
-      margin-right: -15px;
-      padding: 4px 15px 20px 0;
-      scroll-padding-left: 0;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: thin;
-    }
-    .home-book { flex: 0 0 min(78vw, 285px); scroll-snap-align: start; }
-  }
-
-  /* Service times: pill/chip row instead of a plain bullet list. */
-  .service-times {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    list-style: none;
-    margin: 0 0 20px;
-    padding: 0;
-  }
-  .service-times li {
-    padding: 6px 14px;
-    color: #102a43;
-    background: #f0f4f8;
-    border: 1px solid #e1eaf1;
-    border-radius: 999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  /* "What we do" checklist: two-column grid instead of a tall vertical list. */
-  .ministry-checklist {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px 18px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .ministry-checklist li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #243b53;
-    font-size: 0.95rem;
-  }
-  .ministry-checklist li .fa-check {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    color: #0879bd;
-    background: #eaf4fc;
-    border-radius: 50%;
-    font-size: 0.7rem;
-  }
-
-  @media (max-width: 575px) {
-    .ministry-checklist { grid-template-columns: 1fr; }
-  }
-
-  /* "Our Ministries" cards: give them real card structure and a hover lift. */
-  .grdhny-info {
-    height: 100%;
-    padding: 32px;
-    background: #fff;
-    border: 1px solid #e7edf3;
-    border-radius: 14px;
-    box-shadow: 0 8px 20px rgba(16, 42, 67, 0.06);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-  .grdhny-info:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 28px rgba(16, 42, 67, 0.1);
-  }
-</style>
+<link rel="stylesheet" href="{% static 'css/home-modern.css' %}">
 {% endblock %}
 
 {% block content %}
-  <!-- main-slider -->
-  <section class="w3l-main-slider" id="home">
-    <div class="church-slider-content">
-      <div class="owl-one owl-carousel owl-theme">
-        <div class="item">
-          <li>
-            <div class="slider-info banner-view bg bg2">
-              <div class="banner-info">
-                <div class="container">
-                  <div class="banner-info-bg text-left">
-                    <p>Welcome to</p>
-                    <h5>Awakening Saints</h5>
-                    <!--<a href="about.html" class="btn btn-white">Learn More</a>-->
-                  </div>
-                </div>
-              </div>
-            
-            </div>
-          </li>
-        </div>
-       
-        <div class="item">
-          <li>
-            <div class="slider-info banner-view banner-top2 bg bg2">
-              <div class="banner-info">
-                <div class="container">
-                  <div class="banner-info-bg text-left">
-                  <p>Grow your faith, one page at a time.</p>
-                  <h5>Discover books that draw you closer to God.</h5>
-                    <!--<a href="about.html" class="btn btn-white">Learn More</a>-->
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-          </li>
-        </div>
-
-        <div class="item">
-          <li>
-            <div class="slider-info banner-view banner-top2 bg bg2">
-              <div class="banner-info">
-                <div class="container">
-                  <div class="banner-info-bg text-left">
-                  <p>Grow your faith, one page at a time.</p>
-                  <h5>Download free Christian books that inspire, encourage, and transform.
-                  </h5>
-                    <!--<a href="about.html" class="btn btn-white">Learn More</a>-->
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-          </li>
-        </div>
-
-       
-
+<section class="as-hero" aria-labelledby="hero-title">
+  <div class="as-hero__glow" aria-hidden="true"></div>
+  <div class="container as-hero__grid">
+    <div class="as-hero__content">
+      <div class="as-hero__eyebrow">
+        <span class="as-hero__eyebrow-mark"><i class="fa-solid fa-sun" aria-hidden="true"></i></span>
+        A place to encounter God and grow
+      </div>
+      <h1 id="hero-title">Awaken your faith.<br><em>Live with purpose.</em></h1>
+      <p class="as-hero__lead">Discover biblical teaching, life-giving sermons and a community committed to prayer, righteousness and spiritual transformation.</p>
+      <div class="as-hero__actions">
+        <a class="as-button as-button--primary" href="{% url 'sales:books' %}">
+          Explore free books <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+        <a class="as-button as-button--light" href="{% url 'sales:media' %}">
+          <span class="as-play-icon"><i class="fa-solid fa-play" aria-hidden="true"></i></span> Watch sermons
+        </a>
+      </div>
+      <div class="as-hero__proof" aria-label="What Awakening Saints offers">
+        <span><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Free faith resources</span>
+        <span><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Daily prayer</span>
+        <span><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Everyone is welcome</span>
       </div>
     </div>
-  </section>
 
-{% if featured_books %}
-<section class="home-library" aria-labelledby="home-library-title">
-  <div class="container">
-    <div class="home-library__header">
-      <div class="home-library__intro">
-        <span class="home-library__eyebrow"><i class="fas fa-book-open" aria-hidden="true"></i> Free digital library</span>
-        <h2 id="home-library-title">See a book you love? Start reading.</h2>
-        <p>Browse our reader favourites and newest releases below. Every book shown here is available to download free.</p>
+    <div class="as-hero__visual">
+      <div class="as-hero__image-wrap">
+        <img src="{% static 'assets/images/banner1.jpg' %}" alt="A congregation worshipping together" width="800" height="449" fetchpriority="high">
+        <div class="as-hero__image-shade" aria-hidden="true"></div>
+        <div class="as-hero__verse">
+          <i class="fa-solid fa-quote-left" aria-hidden="true"></i>
+          <p>Righteousness and justice are the foundation of your throne.</p>
+          <span>Psalm 89:14</span>
+        </div>
       </div>
-      <a class="home-library__all" href="{% url 'sales:books' %}">
-        Browse all books <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      <div class="as-hero__floating-card">
+        <span class="as-hero__floating-icon"><i class="fa-solid fa-book-open" aria-hidden="true"></i></span>
+        <span><strong>Read without limits</strong>Free Christian books for every season.</span>
+      </div>
+      <div class="as-hero__dots" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<section class="as-gathering" aria-labelledby="gathering-title">
+  <div class="container">
+    <div class="as-gathering__panel">
+      <div class="as-gathering__intro">
+        <span class="as-gathering__icon"><i class="fa-regular fa-calendar" aria-hidden="true"></i></span>
+        <div>
+          <span class="as-mini-label">Come as you are</span>
+          <h2 id="gathering-title">Gather with us this week</h2>
+        </div>
+      </div>
+      <div class="as-gathering__times">
+        <div class="as-gathering__time">
+          <span>Monday–Saturday</span>
+          <strong>12:00 PM–8:00 PM</strong>
+          <small>Prayer altar &amp; evening service</small>
+        </div>
+        <div class="as-gathering__line" aria-hidden="true"></div>
+        <div class="as-gathering__time">
+          <span>Sunday</span>
+          <strong>8:00 AM &amp; 10:00 AM</strong>
+          <small>Two worship services</small>
+        </div>
+      </div>
+      <a class="as-gathering__direction" href="https://www.google.com/maps/search/?api=1&amp;query=Kireka+Christian+Fellowship+Prayer+Altar" target="_blank" rel="noopener">
+        <span><i class="fa-solid fa-location-dot" aria-hidden="true"></i></span>
+        <span><small>Kireka Banda, Kampala</small><strong>Get directions <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></strong></span>
       </a>
     </div>
+  </div>
+</section>
 
-    <div class="home-books-grid">
+{% if featured_books %}
+<section class="as-section as-library" aria-labelledby="library-title">
+  <div class="container">
+    <div class="as-section-heading as-section-heading--split">
+      <div>
+        <span class="as-eyebrow"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Free digital library</span>
+        <h2 id="library-title">Wisdom for your journey</h2>
+        <p>Reader favourites and new releases to help you grow—available to download at no cost.</p>
+      </div>
+      <a class="as-text-link" href="{% url 'sales:books' %}">Browse the library <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="as-book-grid">
       {% for book in featured_books %}
-      <article class="home-book">
-        <a class="home-book__cover" href="{{ book.get_absolute_url }}" aria-label="View {{ book.title }}">
-          <img src="{{ book.get_cover_url }}" alt="Cover of {{ book.title }}" loading="{% if forloop.counter <= 4 %}eager{% else %}lazy{% endif %}" onerror="this.onerror=null;this.src='{% static 'assets/images/book-cover-placeholder.svg' %}'">
-          <span class="home-book__free">Free e-book</span>
+      <article class="as-book-card">
+        <a class="as-book-card__cover" href="{{ book.get_absolute_url }}" aria-label="View {{ book.title }}">
+          <img src="{{ book.get_cover_url }}" alt="Cover of {{ book.title }}" width="420" height="525" loading="{% if forloop.counter <= 4 %}eager{% else %}lazy{% endif %}" onerror="this.onerror=null;this.src='{% static 'assets/images/book-cover-placeholder.svg' %}'">
+          <span class="as-book-card__badge">Free e-book</span>
+          <span class="as-book-card__open"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span>
         </a>
-        <div class="home-book__body">
-          <div class="home-book__topic">{{ book.category.cat_name }}</div>
+        <div class="as-book-card__body">
+          <span class="as-book-card__topic">{{ book.category.cat_name }}</span>
           <h3><a href="{{ book.get_absolute_url }}">{{ book.title }}</a></h3>
-          <p class="home-book__author">by {{ book.author|default:'Awakening Saints' }}</p>
-          <div class="home-book__actions">
-            <a class="home-book__button home-book__button--view" href="{{ book.get_absolute_url }}">View</a>
-            <a class="home-book__button home-book__button--download" href="{% url 'sales:free_book_download' book.product_slug %}">
-              <i class="fas fa-download" aria-hidden="true"></i> Download free
-            </a>
-          </div>
+          <p>By {{ book.author|default:'Awakening Saints' }}</p>
+          <a class="as-book-card__download" href="{% url 'sales:free_book_download' book.product_slug %}">
+            Download free <i class="fa-solid fa-download" aria-hidden="true"></i>
+          </a>
         </div>
       </article>
       {% endfor %}
@@ -400,163 +120,144 @@
 </section>
 {% endif %}
 
+<section class="as-section as-story" aria-labelledby="story-title">
+  <div class="container as-story__grid">
+    <div class="as-story__visual">
+      <div class="as-story__image-main">
+        <img src="{% static 'assets/images/banner3.jpg' %}" alt="People worshipping together at church" width="736" height="449" loading="lazy">
+      </div>
+      <div class="as-story__image-accent">
+        <img src="{% static 'assets/images/robert_barasa.jpg' %}" alt="Pastor Robert Barasa" width="320" height="400" loading="lazy">
+      </div>
+      <div class="as-story__since"><strong>2017</strong><span>A prayer altar<br>became a ministry</span></div>
+    </div>
 
-<section class="w3l-grids-3 py-5" id="about">
-  <div class="container py-md-5">
-    <div class="row bottom-ab-grids align-items-center">
-      <div class="col-lg-6 bottom-ab-left pr-lg-5">
-        <h6 class="sub-title">About Us</h6>
-        <h3 class="hny-title">
-          A Community of Faith and Service
-        </h3>
-        <p class="my-3 pr-lg-4">
-          We are a church committed to spreading the love of Christ through worship, fellowship, 
-          and service to the community. Our mission is to nurture spiritual growth, build a supportive community,Taking back the church to its true foundation
-          and share God's word with all. Join us as we walk together in faith and love.
-        </p>
-        <!--<a href="about.html" class="btn btn-style btn-secondary mt-4">Learn More</a>-->
+    <div class="as-story__content">
+      <span class="as-eyebrow"><i class="fa-solid fa-seedling" aria-hidden="true"></i> Our story</span>
+      <h2 id="story-title">Rooted in prayer.<br>Growing in purpose.</h2>
+      <p class="as-story__lead">Awakening Saints began as a family prayer altar and grew into a prophetic, fivefold ministry serving Kireka and communities beyond.</p>
+      <p>We exist to take the church back to its true foundation—helping believers grow spiritually, live righteously and discover the gifts God has placed within them.</p>
+      <div class="as-story__values">
+        <div><span><i class="fa-solid fa-cross" aria-hidden="true"></i></span><strong>Christ-centred</strong><small>Grounded in the true Word of God</small></div>
+        <div><span><i class="fa-solid fa-people-group" aria-hidden="true"></i></span><strong>Community-minded</strong><small>Growing and serving together</small></div>
       </div>
-      <div class="col-lg-6 bottom-ab-right mt-lg-0 mt-5">
-        <img src="{% static 'assets/images/banner3.jpg' %}" class="img-curve img-fluid" alt="Church Fellowship" />
-      </div>
+      <a class="as-text-link" href="{% url 'sales:about' %}">Discover our story <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
     </div>
   </div>
 </section>
 
+<section class="as-section as-ministries" aria-labelledby="ministries-title">
+  <div class="container">
+    <div class="as-section-heading as-section-heading--center">
+      <span class="as-eyebrow"><i class="fa-solid fa-hands-praying" aria-hidden="true"></i> There is a place for you</span>
+      <h2 id="ministries-title">Find care, connection and growth</h2>
+      <p>Wherever you are on your journey, our ministries are here to help you take your next faithful step.</p>
+    </div>
 
-
-
-<section class="w3l-services1">
-  <div id="content-with-photo4-block" class="py-5">
-    <div class="container py-md-5">
-      <div class="cwp4-two row">
-        <div class="cwp4-image col-lg-6 pr-lg-5 mb-lg-0 mb-5">
-        <h6 class="sub-title">Church Services</h6>
-          <h3 class="hny-title">Church Services </h3>
-          <p>
-            
-          </p>
-
-          <h6 class="sub-title">Monday - Saturday</h6>
-          <ul class="cont-4 service-times">
-            <li>12:00 pm - 2:30 pm</li>
-            <li>3:30 pm - 5:00 pm</li>
-            <li>5:00 pm - 8:00 pm</li>
-          </ul>
-
-          <h6 class="sub-title">Sunday</h6>
-          <ul class="cont-4 service-times">
-            <li>8:00 am - 10:00 am</li>
-            <li>10:00 am - 1:00 pm</li>
-          </ul>
-        </div>
-        <div class="cwp4-text col-lg-6">
-          <h6 class="sub-title">What We Do</h6>
-          <h3 class="hny-title">Our Ministry</h3>
-          <p>
-            We are dedicated to serving our community through various ministries,
-            offering spiritual guidance, fellowship, and outreach programs. Our goal is to create a space for growth in faith and connection with others.
-          </p>
-
-          <ul class="cont-4 ministry-checklist">
-            <li><span class="fa fa-check"></span> Worship Services for All Ages</li>
-            <li><span class="fa fa-check"></span> Bible Study Groups</li>
-            <li><span class="fa fa-check"></span> Community Outreach Programs</li>
-            <li><span class="fa fa-check"></span> Youth and Family Ministries</li>
-            <li><span class="fa fa-check"></span> Prayer and Counseling Services</li>
-            <li><span class="fa fa-check"></span> Evangalisim</li>
-          </ul>
-        </div>
-      </div>
+    <div class="as-ministry-grid">
+      <article class="as-ministry-card as-ministry-card--featured">
+        <span class="as-ministry-card__number">01</span>
+        <span class="as-ministry-card__icon"><i class="fa-solid fa-hands-praying" aria-hidden="true"></i></span>
+        <h3>Prayer &amp; worship</h3>
+        <p>Join daily prayer and uplifting worship as we seek God together.</p>
+        <a href="{% url 'sales:services' %}">View service times <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </article>
+      <article class="as-ministry-card">
+        <span class="as-ministry-card__number">02</span>
+        <span class="as-ministry-card__icon"><i class="fa-regular fa-comments" aria-hidden="true"></i></span>
+        <h3>Counselling</h3>
+        <p>Receive confidential, compassionate biblical guidance through life’s challenges.</p>
+        <a href="{% url 'sales:contact' %}">Speak with us <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </article>
+      <article class="as-ministry-card">
+        <span class="as-ministry-card__number">03</span>
+        <span class="as-ministry-card__icon"><i class="fa-solid fa-compass" aria-hidden="true"></i></span>
+        <h3>Pastoral mentorship</h3>
+        <p>Grow in calling, character and leadership with experienced spiritual support.</p>
+        <a href="{% url 'sales:services' %}">Explore mentorship <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </article>
+      <article class="as-ministry-card">
+        <span class="as-ministry-card__number">04</span>
+        <span class="as-ministry-card__icon"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i></span>
+        <h3>Community outreach</h3>
+        <p>Help us care for children, families and neighbours facing difficult seasons.</p>
+        <a href="{% url 'sales:orphans' %}">See our outreach <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </article>
     </div>
   </div>
 </section>
 
-<section class="w3l-how-grids-3 py-5" id="how">
-  <div class="container py-md-5">
-    <div class="w3l-header mb-md-5 mb-4">
-      <h6 class="sub-title">Our Ministries</h6>
-      <h3 class="hny-title">We Offer Spiritual Growth and Fellowship</h3>
-      <p class="">Our church is dedicated to nurturing your faith through various ministries and services that promote spiritual well-being and community connection.</p>
-    </div>
-    <div class="row bottom-ab-grids align-items-center">
-      <div class="col-lg-4 bottom-ab-left">
-        <div class="grdhny-info">
-          <h4><a href="#" class="hnys-title">Worship Services</a></h4>
-          <p class="mt-2">Join us in uplifting worship where we praise God and strengthen our faith together.</p>
-        </div>
+<section class="as-section as-message" aria-labelledby="message-title">
+  <div class="container">
+    <div class="as-message__panel">
+      <div class="as-message__art">
+        {% if latest_sermon and latest_sermon.thumbnail %}
+          <img src="{{ latest_sermon.get_thumbnail_url }}" alt="" width="700" height="520" loading="lazy">
+        {% else %}
+          <img src="{% static 'assets/images/banner1.jpg' %}" alt="" width="800" height="449" loading="lazy">
+        {% endif %}
+        <div class="as-message__art-overlay" aria-hidden="true"></div>
+        <a class="as-message__play" href="{% url 'sales:media' %}" aria-label="Open sermons">
+          <i class="fa-solid fa-play" aria-hidden="true"></i>
+          <span>Listen now</span>
+        </a>
       </div>
-      <div class="col-lg-4 bottom-ab-right">
-        <div class="grdhny-info">
-          <h4><a href="#" class="hnys-title">Bible Study Groups</a></h4>
-          <p class="mt-2">Deepen your understanding of God's word in a community setting through engaging Bible studies.</p>
-        </div>
-      </div>
-
-      <div class="col-lg-4 bottom-ab-right">
-        <div class="grdhny-info">
-          <h4><a href="#" class="hnys-title">Community Outreach programs</a></h4>
-          <p class="mt-2">We as Awakening Saints engage in community outreach programs such as helping the needy as part fulfulling God's work. </p>
-        </div>
-      </div>
-
-      <div class="col-lg-4 bottom-ab-right">
-        <div class="grdhny-info">
-          <h4><a href="#" class="hnys-title">Youth Ministry</a></h4>
-          <p class="mt-2">Our youth ministry fosters growth in faith, building the next generation of believers.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="w3l-bottom py-5 mb-3">
-  <div class="container py-md-4 py-3 text-center">
-    <div class="row my-lg-4 mt-4">
-      <div class="col-lg-9 col-md-10 ml-auto">
-        <div class="subscribe ml-auto">
-          <div class="header-section text-left">
-            <h3 class="hny-title two">Stay Connected with Us</h3>
-            <h4 class="my-2">Receive Updates on Upcoming Services and Events</h4>
+      <div class="as-message__content">
+        <span class="as-eyebrow as-eyebrow--light"><i class="fa-solid fa-wave-square" aria-hidden="true"></i> Messages for real life</span>
+        {% if latest_sermon %}
+          <h2 id="message-title">{{ latest_sermon.title }}</h2>
+          <p>{{ latest_sermon.description|default:'Listen to biblical teaching created to strengthen your faith and guide your everyday walk with God.'|truncatewords:28 }}</p>
+          <div class="as-message__meta">
+            <span><i class="fa-regular fa-user" aria-hidden="true"></i> {{ latest_sermon.preacher|default:'Awakening Saints' }}</span>
+            {% if latest_sermon.scripture %}<span><i class="fa-solid fa-book-bible" aria-hidden="true"></i> {{ latest_sermon.scripture }}</span>{% endif %}
           </div>
-
-          <form action="{% url 'sales:subscribe_email' %}" method="post" class="subscribe-wthree pt-lg-3 mt-4">
-            {% csrf_token %}
-            <div class="flex-wrap subscribe-wthree-field">
-              <input class="form-control" type="email" name="email" placeholder="Enter your email..." required>
-              <button class="btn btn-style btn-primary" type="submit">Subscribe</button>
-            </div>
-            <p class="mt-3">By subscribing, you agree to receive church updates, and agree to our <a href="#">privacy policy</a> and <a href="#">terms of use</a>.</p>
-          </form>
-
-        </div>
+        {% else %}
+          <h2 id="message-title">Truth you can carry into every day.</h2>
+          <p>Listen to sermons, teachings and conversations created to strengthen your faith and guide your everyday walk with God.</p>
+        {% endif %}
+        <a class="as-button as-button--primary" href="{% url 'sales:media' %}">Explore all sermons <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
       </div>
     </div>
   </div>
 </section>
 
+<section class="as-section as-newsletter" id="newsletter" aria-labelledby="newsletter-title">
+  <div class="container">
+    <div class="as-newsletter__panel">
+      <div class="as-newsletter__copy">
+        <span class="as-newsletter__icon"><i class="fa-regular fa-paper-plane" aria-hidden="true"></i></span>
+        <div>
+          <span class="as-mini-label">Stay encouraged</span>
+          <h2 id="newsletter-title">A little faith for your inbox.</h2>
+          <p>Receive new books, sermons and important ministry updates.</p>
+        </div>
+      </div>
+      <form action="{% url 'sales:subscribe_email' %}" method="post" class="as-newsletter__form">
+        {% csrf_token %}
+        <label class="sr-only" for="newsletter-email">Email address</label>
+        <div class="as-newsletter__field">
+          <i class="fa-regular fa-envelope" aria-hidden="true"></i>
+          <input id="newsletter-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          <button type="submit">Subscribe <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+        </div>
+        {% if request.GET.subscribed_successfully %}
+          <p class="as-newsletter__success" role="status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> You’re subscribed. Welcome to the community.</p>
+        {% else %}
+          <small>No noise—only meaningful updates. Unsubscribe anytime.</small>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'assets/js/owl.carousel.js' %}"></script>
 <script>
-  $(document).ready(function () {
-    $('.owl-one').owlCarousel({
-      loop: true,
-      margin: 0,
-      nav: false,
-      responsiveClass: true,
-      autoplay: true,
-      autoplayTimeout: 5000,
-      autoplaySpeed: 1000,
-      autoplayHoverPause: false,
-      responsive: {
-        0: { items: 1, nav: false },
-        480: { items: 1, nav: false },
-        667: { items: 1, nav: true },
-        1000: { items: 1, nav: true }
-      }
-    });
-  });
+  (function () {
+    if (window.location.search.indexOf('subscribed_successfully=1') !== -1) {
+      var newsletter = document.getElementById('newsletter');
+      if (newsletter) newsletter.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }());
 </script>
 {% endblock %}

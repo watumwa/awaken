@@ -1,98 +1,101 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Contact | Awakening Saints{% endblock %}
-{% block content %}
 
-  <!-- about breadcrumb -->
-  <section class="w3l-about-breadcrumb text-left">
-    <div class="breadcrumb-bg breadcrumb-bg-about py-sm-5 py-4">
-      <div class="container">
-        <h2 class="title">Contact</h2>
-        <ul class="breadcrumbs-custom-path mt-2">
-          <li><a href="{% url 'sales:homeone' %}">Home</a></li>
-          <li class="active"><span class="fa fa-arrow-right mx-2" aria-hidden="true"></span> Contact </li>
-        </ul>
+{% block title %}Contact & Prayer | Awakening Saints{% endblock %}
+{% block meta_description %}Contact Awakening Saints for prayer, counselling, ministry support or help planning a visit to our church in Kireka, Kampala.{% endblock %}
+{% block main_class %}as-page{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/page-modern.css' %}">{% endblock %}
+
+{% block content %}
+<section class="as-page-hero" aria-labelledby="page-title">
+  <img class="as-page-hero__image" src="{% static 'assets/images/banner3.jpg' %}" alt="" width="736" height="449">
+  <div class="as-page-hero__shade" aria-hidden="true"></div><div class="as-page-hero__dots" aria-hidden="true"></div>
+  <div class="container as-page-hero__content">
+    <span class="as-page-hero__eyebrow"><i class="fa-regular fa-message" aria-hidden="true"></i> Let’s connect</span>
+    <h1 id="page-title">You do not have to walk alone.</h1>
+    <p>Send a message, request prayer or plan your first visit. Our ministry team is ready to listen.</p>
+    <ol class="as-breadcrumbs" aria-label="Breadcrumb"><li><a href="{% url 'sales:homeone' %}">Home</a></li><li><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></li><li aria-current="page">Contact</li></ol>
+  </div>
+</section>
+
+<section class="as-page-section">
+  <div class="container as-contact-grid">
+    <div class="as-contact-copy">
+      <span class="as-page-eyebrow"><i class="fa-regular fa-heart" aria-hidden="true"></i> We are here to help</span>
+      <h2>Start a conversation with us.</h2>
+      <p>Whether you need prayer, counselling or practical information about the ministry, tell us how we can help. We aim to respond with care and confidentiality.</p>
+      <div class="as-contact-methods">
+        <a class="as-contact-method" href="tel:+256706344822"><i class="fa-solid fa-phone" aria-hidden="true"></i><span><strong>Call or WhatsApp</strong><small>+256 706 344 822</small></span></a>
+        <a class="as-contact-method" href="mailto:awakeningsaints1@gmail.com"><i class="fa-regular fa-envelope" aria-hidden="true"></i><span><strong>Email us</strong><small>awakeningsaints1@gmail.com</small></span></a>
+        <a class="as-contact-method" href="https://www.google.com/maps/search/?api=1&amp;query=Kireka+Christian+Fellowship+Prayer+Altar" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><strong>Visit us</strong><small>Kireka Banda, Kampala, Uganda</small></span></a>
       </div>
     </div>
-  </section>
-  <!-- //about breadcrumb -->
-   <!-- /contact-->
 
+    <form id="contactForm" class="as-modern-form">
+      <div class="as-modern-form__heading"><h2>How can we support you?</h2><p>Complete the form and a member of our team will receive your message.</p></div>
+      <div class="as-form-grid">
+        <div class="as-field"><label for="name">Full name</label><input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" required></div>
+        <div class="as-field"><label for="phone">Phone number</label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="e.g. +256 700 000 000" required></div>
+        <div class="as-field"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+        <div class="as-field"><label for="location">Your location</label><input id="location" name="location" type="text" autocomplete="address-level2" placeholder="Town or city" required></div>
+        <div class="as-field as-field--full"><label for="subject">What would you like help with?</label><select id="subject" name="subject" required><option value="" selected disabled>Select a topic</option><option value="Prayer request">Prayer request</option><option value="Counselling">Counselling</option><option value="Pastoral mentorship">Pastoral mentorship</option><option value="Dream interpretation">Dream interpretation</option><option value="Plan a visit">Plan a visit</option><option value="General enquiry">General enquiry</option></select></div>
+        <div class="as-field as-field--full"><label for="message">Your message</label><textarea id="message" name="message" placeholder="Tell us how we can help..." required></textarea><small class="as-field__help">Please do not include passwords, card details or other sensitive financial information.</small></div>
+      </div>
+      <div class="as-form-submit"><small><i class="fa-solid fa-lock" aria-hidden="true"></i> Your message will be shared only with the ministry team responsible for responding.</small><button id="contactSubmit" type="submit" class="as-button as-button--primary">Send message <i class="fa-regular fa-paper-plane" aria-hidden="true"></i></button></div>
+      <p id="contactStatus" class="as-form-status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
 
+<section class="as-page-section as-page-section--white" aria-labelledby="visit-title">
+  <div class="container">
+    <div class="as-page-heading"><span class="as-page-eyebrow"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Plan your visit</span><h2 id="visit-title">Find us in Kireka, Kampala.</h2><p>Join us during the week for prayer or on Sunday for worship. Everyone is welcome.</p></div>
+    <div class="as-map"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.7487277725963!2d32.63414038477777!3d0.3384099631276664!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177db9007db12f81%3A0x87c30f2eebf7fd99!2sKIREKA%20CHRISTIAN%20FELLOWSHIP%20PRAYER%20ALTAR!5e0!3m2!1sen!2sug!4v1736489527900!5m2!1sen!2sug" title="Map showing Awakening Saints in Kireka, Kampala" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+  </div>
+</section>
+{% endblock %}
 
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  (function () {
+    var form = document.getElementById('contactForm');
+    var button = document.getElementById('contactSubmit');
+    var status = document.getElementById('contactStatus');
+    if (!form || !button || !status || typeof emailjs === 'undefined') return;
 
+    emailjs.init('s48BMsVC2VrWDiqT4');
 
+    function showStatus(message, type) {
+      status.textContent = message;
+      status.className = 'as-form-status is-visible ' + type;
+    }
 
-<div class="donation-form py-5" id="donate">
-    <div class="container py-lg-5 py-md-4">
-        <h3 class="hny-title mb-lg-5 mb-4">Contact</h3>
-        <!-- Include EmailJS SDK -->
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
 
+      button.disabled = true;
+      button.innerHTML = 'Sending… <i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i>';
+      showStatus('Sending your message…', '');
 
-<!-- Contact Form -->
-<form id="donationForm">
-    <div class="main-input">
-        <div class="d-grid">
-            <input type="text" id="name" class="contact-input" placeholder="Name" required>
-            <input type="tel" id="phone" class="contact-input" placeholder="Phone number" required>
-        </div>
-        <div class="d-grid">
-            <input type="email" id="email" class="contact-input" placeholder="Email address" required>
-            <input type="text" id="location" class="contact-input" placeholder="Location" required>
-        </div>
-    </div>
-    <textarea rows="4" id="message" class="contact-textarea" placeholder="Message" required></textarea>
-    
-    <div class="text-right">
-        <button type="submit" class="btn btn-style btn-secondary btn-donate">Send Message</button>
-    </div>
-</form>
-
-
-    </div>
-</div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-   <script>
-        (function() {
-            emailjs.init("s48BMsVC2VrWDiqT4"); // Replace with your EmailJS Public Key
-        })();
-
-        document.getElementById("donationForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent form from reloading the page
-            
-            // Collect form data
-            const serviceID = "Rgteyue_vu1ifeb"; // Replace with your EmailJS Service ID
-            const templateID = "x423rte_8ng4zqi"; // Replace with your EmailJS Template ID
-
-            const templateParams = {
-                name: document.getElementById("name").value,
-                email: document.getElementById("email").value,
-                phone: document.getElementById("phone").value,
-                location: document.getElementById("location").value,
-                message: document.getElementById("message").value
-            };
-
-            // Send email
-            emailjs.send(serviceID, templateID, templateParams)
-                .then(response => {
-                    alert("Message sent successfully!");
-                    document.getElementById("donationForm").reset();
-                })
-                .catch(error => {
-                    alert("Failed to send message. Please try again.");
-                    console.error("EmailJS Error:", error);
-                });
-        });
-    </script>
-
-
-
-    <div class="maphny">
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.7487277725963!2d32.63414038477777!3d0.3384099631276664!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x177db9007db12f81%3A0x87c30f2eebf7fd99!2sKIREKA%20CHRISTIAN%20FELLOWSHIP%20PRAYER%20ALTAR!5e0!3m2!1sen!2sug!4v1736489527900!5m2!1sen!2sug" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
-
-<!--//contact-->
- 
+      emailjs.send('Rgteyue_vu1ifeb', 'x423rte_8ng4zqi', {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        location: document.getElementById('location').value,
+        subject: document.getElementById('subject').value,
+        message: document.getElementById('message').value
+      }).then(function () {
+        showStatus('Thank you. Your message has been sent successfully, and our team will respond as soon as possible.', 'is-success');
+        form.reset();
+      }).catch(function () {
+        showStatus('We could not send your message. Please try again or call +256 706 344 822.', 'is-error');
+      }).finally(function () {
+        button.disabled = false;
+        button.innerHTML = 'Send message <i class="fa-regular fa-paper-plane" aria-hidden="true"></i>';
+      });
+    });
+  }());
+</script>
 {% endblock %}

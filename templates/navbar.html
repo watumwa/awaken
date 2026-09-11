@@ -1,96 +1,84 @@
-
 {% load static %}
 {% with current_page=request.resolver_match.url_name %}
-  <header id="site-header" class="fixed-top">
-    <div class="topbar">
-      <div class="container topbar-inner">
-        <div class="topbar-contact">
-          <a href="tel:+256706344822"><i class="fa fa-phone" aria-hidden="true"></i> +(256) 706344822</a>
-          <a href="mailto:awakeningsaints1@gmail.com"><i class="fa fa-envelope" aria-hidden="true"></i> awakeningsaints1@gmail.com</a>
-          <span><i class="fa fa-map-marker" aria-hidden="true"></i> Kireka Banda, Kampala</span>
-        </div>
-        <div class="topbar-social">
-          <a href="https://www.facebook.com/profile.php?id=100089707950048&mibextid=ZbWKwL" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
-          <a href="https://x.com/awakeningsiants" aria-label="Twitter / X"><i class="fab fa-twitter" aria-hidden="true"></i></a>
-          <a href="https://www.youtube.com/@awakeningsaints.org_2wh" aria-label="YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
-        </div>
+<header id="site-header" class="fixed-top as-header">
+  <div class="as-topbar">
+    <div class="container as-topbar__inner">
+      <div class="as-topbar__message">
+        <span class="as-live-dot" aria-hidden="true"></span>
+        <span>Daily prayer altar in Kireka, Kampala</span>
+        <span class="as-topbar__divider" aria-hidden="true"></span>
+        <span>Monday–Saturday · 12:00 PM–8:00 PM</span>
+      </div>
+      <div class="as-topbar__links">
+        <a href="tel:+256706344822"><i class="fa-solid fa-phone" aria-hidden="true"></i><span>+256 706 344 822</span></a>
+        <a href="https://www.youtube.com/@awakeningsaints.org_2wh" target="_blank" rel="noopener" aria-label="Awakening Saints on YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a>
+        <a href="https://www.facebook.com/profile.php?id=100089707950048&amp;mibextid=ZbWKwL" target="_blank" rel="noopener" aria-label="Awakening Saints on Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a>
       </div>
     </div>
-    <div class="container">
-      <nav class="navbar navbar-expand-lg stroke" aria-label="Main navigation">
-        <h1 class="site-brand-heading">
-          <a class="navbar-brand mr-lg-5" href="{% url 'sales:homeone' %}" aria-label="Awakening Saints home">
-            <img class="site-logo" src="{% static 'assets/images/logo.png' %}" alt="" width="55" height="55">
-            <span class="site-brand-name">Awakening<span>Saints</span></span>
-          </a>
-        </h1>
- 
+  </div>
 
-        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
-        data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
-        aria-label="Open navigation menu">
+  <div class="container as-header__inner">
+    <nav class="navbar navbar-expand-lg as-navbar" aria-label="Main navigation">
+      <a class="navbar-brand as-brand" href="{% url 'sales:homeone' %}" aria-label="Awakening Saints home">
+        <span class="as-brand__mark">
+          <img class="site-logo" src="{% static 'assets/images/logo.png' %}" alt="" width="52" height="52">
+        </span>
+        <span class="as-brand__copy">
+          <span class="site-brand-name">Awakening Saints</span>
+          <span class="as-brand__tagline">Faith · Truth · Transformation</span>
+        </span>
+      </a>
 
-	          <span class="navbar-toggler-icon fa icon-expand fa-bars" aria-hidden="true"></span>
-	          <span class="navbar-toggler-icon fa icon-close fa-times" aria-hidden="true"></span>
-	      </button>
+      <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02"
+              aria-expanded="false" aria-label="Open navigation menu">
+        <span class="navbar-toggler-icon fa icon-expand fa-bars" aria-hidden="true"></span>
+        <span class="navbar-toggler-icon fa icon-close fa-times" aria-hidden="true"></span>
+      </button>
 
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item{% if current_page == 'homeone' %} active{% endif %}">
-                <a href="{% url 'sales:homeone' %}" class="nav-link"{% if current_page == 'homeone' %} aria-current="page"{% endif %}>Home</a>
-            </li>
-
-            <li class="nav-item{% if current_page == 'about' %} active{% endif %}">
-                <a href="{% url 'sales:about' %}" class="nav-link"{% if current_page == 'about' %} aria-current="page"{% endif %}>About</a>
-            </li>
-
-            <li class="nav-item{% if current_page == 'contact' %} active{% endif %}">
-                <a href="{% url 'sales:contact' %}" class="nav-link"{% if current_page == 'contact' %} aria-current="page"{% endif %}>Contact</a>
-            </li>
-
-            <li class="nav-item{% if current_page == 'services' %} active{% endif %}">
-                <a href="{% url 'sales:services' %}" class="nav-link"{% if current_page == 'services' %} aria-current="page"{% endif %}>Services</a>
-            </li>
-
-            <li class="nav-item{% if current_page == 'books' or current_page == 'shop_list' or current_page == 'product_detail' or current_page == 'free_book_download' or current_page == 'free_book_download_success' or current_page == 'verified_book_review' %} active{% endif %}">
-                <a href="{% url 'sales:books' %}" class="nav-link"{% if current_page == 'books' or current_page == 'shop_list' or current_page == 'product_detail' or current_page == 'free_book_download' or current_page == 'free_book_download_success' or current_page == 'verified_book_review' %} aria-current="page"{% endif %}>Books</a>
-            </li>
-
-          <li class="nav-item dropdown{% if current_page == 'donate' or current_page == 'orphans' or current_page == 'media' or current_page == 'dashboard' or current_page == 'login' or current_page == 'registration' %} active{% endif %}">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarMoreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              More <i class="fas fa-chevron-down nav-dropdown-icon" aria-hidden="true"></i>
-            </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarMoreDropdown">
-
-              <li><a class="dropdown-item" href="{% url 'sales:donate' %}">Donate</a></li>
-              <li><a class="dropdown-item" href="{% url 'sales:orphans' %}">Orphans</a></li>
-              <li><a class="dropdown-item" href="{% url 'sales:media' %}">Sermons</a></li>
-            
-
-              {% if user.is_authenticated %}
-                <li class="border-top">
-                  <a class="dropdown-item" href="{% url 'accounts:dashboard' %}">
-                    <i class="far fa-user"></i> {{ user.first_name }} {{ user.last_name }}
-                  </a>
-                </li>
-                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
-              {% else %}
-                <li><a class="dropdown-item" href="{% url 'accounts:login' %}">Login</a></li>
-                <li><a class="dropdown-item" href="{% url 'accounts:registration' %}">Sign Up</a></li>
-              {% endif %}
-
-            </ul>
-
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav ml-auto as-nav-list">
+          <li class="nav-item{% if current_page == 'homeone' %} active{% endif %}">
+            <a href="{% url 'sales:homeone' %}" class="nav-link"{% if current_page == 'homeone' %} aria-current="page"{% endif %}>Home</a>
           </li>
-
-          </ul>
-
-        </div>
-
-      </nav>
-    </div>
-    <button class="mobile-nav-backdrop" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-label="Close navigation menu" tabindex="-1"></button>
-  </header>
-
+          <li class="nav-item{% if current_page == 'about' %} active{% endif %}">
+            <a href="{% url 'sales:about' %}" class="nav-link"{% if current_page == 'about' %} aria-current="page"{% endif %}>About</a>
+          </li>
+          <li class="nav-item{% if current_page == 'books' or current_page == 'shop_list' or current_page == 'product_detail' or current_page == 'free_book_download' or current_page == 'free_book_download_success' or current_page == 'verified_book_review' %} active{% endif %}">
+            <a href="{% url 'sales:books' %}" class="nav-link"{% if current_page == 'books' or current_page == 'shop_list' or current_page == 'product_detail' or current_page == 'free_book_download' or current_page == 'free_book_download_success' or current_page == 'verified_book_review' %} aria-current="page"{% endif %}>Books</a>
+          </li>
+          <li class="nav-item{% if current_page == 'media' %} active{% endif %}">
+            <a href="{% url 'sales:media' %}" class="nav-link"{% if current_page == 'media' %} aria-current="page"{% endif %}>Sermons</a>
+          </li>
+          <li class="nav-item{% if current_page == 'services' %} active{% endif %}">
+            <a href="{% url 'sales:services' %}" class="nav-link"{% if current_page == 'services' %} aria-current="page"{% endif %}>Ministries</a>
+          </li>
+          <li class="nav-item dropdown{% if current_page == 'contact' or current_page == 'orphans' or current_page == 'dashboard' or current_page == 'login' or current_page == 'registration' %} active{% endif %}">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarConnectDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Connect <i class="fa-solid fa-chevron-down nav-dropdown-icon" aria-hidden="true"></i>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarConnectDropdown">
+              <li><a class="dropdown-item" href="{% url 'sales:contact' %}"><i class="fa-regular fa-message" aria-hidden="true"></i> Contact us</a></li>
+              <li><a class="dropdown-item" href="{% url 'sales:orphans' %}"><i class="fa-solid fa-hands-holding-child" aria-hidden="true"></i> Community outreach</a></li>
+              {% if user.is_authenticated %}
+                <li class="as-dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}"><i class="fa-regular fa-user" aria-hidden="true"></i> My account</a></li>
+                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i> Sign out</a></li>
+              {% else %}
+                <li class="as-dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'accounts:login' %}"><i class="fa-regular fa-user" aria-hidden="true"></i> Sign in</a></li>
+              {% endif %}
+            </ul>
+          </li>
+          <li class="nav-item as-nav-donate{% if current_page == 'donate' %} active{% endif %}">
+            <a href="{% url 'sales:donate' %}" class="as-donate-link"{% if current_page == 'donate' %} aria-current="page"{% endif %}>
+              Donate <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <button class="mobile-nav-backdrop" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-label="Close navigation menu" tabindex="-1"></button>
+</header>
 {% endwith %}
-

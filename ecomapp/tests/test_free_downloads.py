@@ -296,7 +296,7 @@ class FreeBookDownloadTests(TestCase):
         response = self.client.get(reverse("sales:homeone"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "See a book you love? Start reading.")
+        self.assertContains(response, "Wisdom for your journey")
         self.assertContains(response, self.product.title)
         self.assertContains(response, self.product.get_cover_url())
         self.assertContains(
